@@ -143,7 +143,7 @@ class Scanner
         while (true) {
             switch ($state) {
                 case 0:
-                    if ($char == 'a') {
+                    if ($char == '<') {
                         $state = 1;
                         $char  = $this->file->getNextChar();
                     } else {
@@ -201,6 +201,7 @@ class Scanner
                         $name .= $char;
                         $char  = $this->file->getNextChar();
                     } else if ($this->isSpace($char)) {
+                        $this->file->goBack();
                         break 2;
                     } else {
                         // exception
@@ -217,6 +218,10 @@ class Scanner
     public function nextChar($allowed = null)
     {
         $allowed = (string) $allowed;
+
+        if (strlen($allowed) > 1)
+            throw new \LengthException ('Allowed must be a char');
+
         while (! $this->file->isEOF()) {
 
             $char = $this->file->getNextChar();

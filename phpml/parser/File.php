@@ -36,6 +36,10 @@ class File
     public function getNextChar()
     {
         $char = fgetc($this->filePointer);
+
+        if ($char === false)
+            return false;
+
         $this->currentPos++;
 
         if ($this->isNewLine($char))
@@ -44,9 +48,23 @@ class File
         return $char;
     }
 
+    public function goBack()
+    {
+        if (fseek($this->filePointer, -1, SEEK_CUR) == -1)
+            throw new \UnderflowException ('Cannot go back in a file that wasn\'t read yet or is empty');
+
+        $char = fgetc($this->filePointer);
+
+        if ($this->isNewLine($char))
+            $this->currentLine--;
+
+        fseek($this->filePointer, -1, SEEK_CUR);
+        $this->currentPos--;
+    }
+
     public function readAll()
     {
-        return fgets($this->filePointer, (filesize($this->name) - $this->currentPos) + 1);
+        return fread($this->filePointer, (filesize($this->name) - $this->currentPos));
     }
 
     public function find($needle)
@@ -106,8 +124,8 @@ class File
         $this->currentLine = $this->savedState->currentLine;
         $this->currentPos  = $this->savedState->currentPos;
         $this->filePointer = $this->savedState->filePointer;
-        fseek($this->filePointer, $this->currentPos);
         $this->savedState  = null;
+        fseek($this->filePointer, $this->currentPos);
     }
 
     protected function isNewLine($char)
