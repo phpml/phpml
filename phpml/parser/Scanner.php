@@ -6,7 +6,7 @@ use phpml\parser\token\Token,
     phpml\parser\token\SimpleToken,
     phpml\parser\token\TagToken,
     phpml\exception\ParserException,
-    phpml\exception\util\ExceptionType;
+    phpml\exception\util\ExceptionFactory;
 
 
 class Scanner
@@ -147,10 +147,13 @@ class Scanner
                         $state = 1;
                         $char  = $this->file->getNextChar();
                     } else {
-                        throw new ParserException(ExceptionType::UNEXPECTED_CHAR,
+                        throw ExceptionFactory::createUnexpectedChar(
+                                __FILE__,
+                                __LINE__,
                                 $this->file->getFileName(),
                                 $this->file->getCurrentLine(),
-                                $char);
+                                $char
+                        );
                     }
 
                     break;

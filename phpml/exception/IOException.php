@@ -3,13 +3,13 @@
 namespace phpml\exception;
 
 /**
- * Base ParserException class
+ * Base IOException class
  *
  * @author Thiago Rigo <thiagophx@gmail.com>
  * @package phpml
  * @subpackage exception
  */
-class ParserException extends \Exception {
+class IOException extends \Exception {
 
     public function __construct($file, $line, $message)
     {
@@ -19,6 +19,5 @@ class ParserException extends \Exception {
         $this->line    = $line;
         $this->message = $message;
     }
-
 }
 ?>

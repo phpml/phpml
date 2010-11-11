@@ -2,6 +2,8 @@
 
 namespace phpml\parser;
 
+use phpml\exception\util\ExceptionFactory;
+
 class File
 {
 
@@ -11,7 +13,7 @@ class File
     protected $savedState;
     protected $name;
 
-    public function __construct($name, $open = true)
+    public function __construct($name)
     {
         $this->filePointer = null;
         $this->currentPos  = 0;
@@ -19,12 +21,14 @@ class File
         $this->savedState  = null;
         $this->name        = $name;
 
-        if ($open)
-            $this->openFile();
+        $this->openFile();
     }
 
     public function openFile()
     {
+        if (! is_readable($this->name))
+            throw ExceptionFactory::createOpenFile(__FILE__, __LINE__, $this->getFileName(), 'reading');
+
         $this->filePointer = fopen($this->name, 'r');
     }
 
