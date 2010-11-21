@@ -20,13 +20,15 @@ class Scanner
         self::$lookAhead = Token::T_TEXT|Token::T_OPEN_TAG;
     }
 
-    // new generation
-    // talvez fazer um metodo para cada state
     public function nextToken()
     {
+        if ($this->file->isEOF())
+            return false;
+        
         switch (self::$lookAhead) {
             case Token::T_TEXT|Token::T_OPEN_TAG:
 
+                // TODO: Find foreach registered namespace
                 $pos = $this->file->find('<php:');
                 
                 // Nothing found
@@ -40,19 +42,19 @@ class Scanner
                     
                 // T_OPEN_TAG
                 } else {
-                    $this->parseOpenTag();
+                    return $this->parseOpenTag();
                 }
 
                 break;
 
             case Token::T_ATTRIBUTE|Token::T_END|Token::T_CLOSE:
-                $char = proximoCharNaoEspaco();
+                $char = $this->nextChar();
+                $this->file->goBack();
+                
                 switch ($char) {
-                    case isLetter():
-                        parseAttr();
+                    case $this->isLetter($char):
+                        return $this->parseAttribute();
 
-                        self::$lookAhead = Token::T_VALUE;
-                        return new token\SimpleToken($type, $value);
                         break;
 
                     case '>':
@@ -73,14 +75,12 @@ class Scanner
                 break;
 
             case Token::T_VALUE:
-                $char = proximoCharNaoEspaco();
+                $char = $this->nextChar();
+                $this->file->goBack();
+                
                 switch ($char) {
-                    case '"':
-                        parseValueDoubleQuotes();
-                        break;
-
-                    case '\'':
-                        parseValueSigleQuotes();
+                    case ( ($char == '"') || ($char == "'") ):
+                        return $this->parseValue();
                         break;
 
                     default:
@@ -113,16 +113,23 @@ class Scanner
 
             case Token::T_OPEN_TAG|Token::T_CLOSE_TAG:
 
+                $pos = $this->file->find(array('</php:', '<php:'));
+
+                // Nothing found
+                if ($pos === false)
+                    return false;
+
                 $this->file->saveState();
-                $char = $this->nextChar('<');
+
+                $this->forward(1);
+                $char = $this->file->nextChar();
+
                 $this->file->restoreState();
 
                 if ($this->isLetter($char)) {
                     return $this->parseOpenTag();
-                } else if ($char == '/') {
-                    parseCloseTag();
                 } else {
-                    error();
+                    parseCloseTag();
                 }
 
                 break;
@@ -133,19 +140,22 @@ class Scanner
         }
     }
 
-    public function parseOpenTag()
+    public function parseValue()
     {
-        $char  = $this->file->getNextChar();
+        $char  = $this->file->nextChar();
         $state = 0;
-        $ns    = '';
-        $name  = '';
+        $value = '';
+        $pos   = 0;
 
         while (true) {
             switch ($state) {
                 case 0:
-                    if ($char == '<') {
-                        $state = 1;
-                        $char  = $this->file->getNextChar();
+                    if ($char == '"') {
+                       $state = 1;
+                       $pos   = $this->file->find('"');
+                    } else if ($char == "'") {
+                       $state = 2;
+                       $pos   = $this->file->find("'");
                     } else {
                         throw ExceptionFactory::createUnexpectedChar(
                                 __FILE__,
@@ -159,55 +169,205 @@ class Scanner
                     break;
 
                 case 1:
-                    echo 1;
+                    if ($pos === false) {
+                        throw ExceptionFactory::createCannotFindChar(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine(),
+                                '"'
+                        );
+                    }
+
+                    $value .= $this->forward($pos);
+                    $this->forward(1);
+
+                    break 2;
+
+                case 2:
+                    if ($pos === false) {
+                        throw ExceptionFactory::createCannotFindChar(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine(),
+                                "'"
+                        );
+                    }
+                    
+                    $value .= $this->forward($pos);
+                    $this->forward(1);
+                    
+                    break 2;
+            }
+        }
+
+        self::$lookAhead = Token::T_ATTRIBUTE|Token::T_END|Token::T_CLOSE;
+        return new SimpleToken(Token::T_VALUE, $value);
+    }
+
+    public function parseAttribute()
+    {
+        $char  = $this->file->nextChar();
+        $state = 0;
+        $value = '';
+
+        while (true) {
+            switch ($state) {
+                case 0:
+                    if ( ($this->isLetter($char)) || ($char == '_') ) {
+                        $state  = 1;
+                        $value .= $char;
+                        $char = $this->file->nextChar();
+                    } else {
+                        throw ExceptionFactory::createUnexpectedChar(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine(),
+                                $char
+                        );
+                    }
+                    
+                    break;
+
+                case 1:
+                    if ( ($this->isAlpha($char)) || ($char == '_') ) {
+                        $state  = 1;
+                        $value .= $char;
+                        $char = $this->file->nextChar();
+                    } else if ($this->isSpace($char)) {
+                        $state = 2;
+                        $char = $this->nextChar();
+                    } else if ($char == '=') {
+                        break 2;
+                    } else {
+                        throw ExceptionFactory::createUnexpectedChar(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine(),
+                                $char
+                        );
+                    }
+
+                    break;
+
+                case 2:
+                    if ($char == '=') {
+                        break 2;
+                    } else {
+                        throw ExceptionFactory::createUnexpectedChar(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine(),
+                                $char
+                        );
+                    }
+
+                    break;
+            }
+        }
+
+        self::$lookAhead = Token::T_VALUE;
+        return new SimpleToken(Token::T_ATTRIBUTE, $value);
+    }
+
+    public function parseOpenTag()
+    {
+        $char  = $this->file->nextChar();
+        $state = 0;
+        $ns    = '';
+        $name  = '';
+
+        while (true) {
+            switch ($state) {
+                case 0:
+                    if ($char == '<') {
+                        $state = 1;
+                        $char  = $this->file->nextChar();
+                    } else {
+                        throw ExceptionFactory::createUnexpectedChar(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine(),
+                                $char
+                        );
+                    }
+
+                    break;
+
+                case 1:
                     if ( ($this->isLetter($char)) || ($char == '_') ) {
                         $state = 2;
                         $ns   .= $char;
-                        $char  = $this->file->getNextChar();
+                        $char  = $this->file->nextChar();
                     } else {
-                        // exception
+                        throw ExceptionFactory::createUnexpectedChar(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine(),
+                                $char
+                        );
                     }
                     
                     break;
 
                 case 2:
-                    echo 2;
-                    if ( ($this->isLetter($char)) || ($char == '_') || (ctype_digit($char)) ) {
+                    if ( ($this->isAlpha($char)) || ($char == '_') ) {
                         $state = 2;
                         $ns   .= $char;
-                        $char  = $this->file->getNextChar();
+                        $char  = $this->file->nextChar();
                     } else if ($char == ':') {
                         $state = 3;
-                        $char  = $this->file->getNextChar();
+                        $char  = $this->file->nextChar();
                     } else {
-                        // exception
+                        throw ExceptionFactory::createUnexpectedChar(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine(),
+                                $char
+                        );
                     }
 
                     break;
 
                 case 3:
-                    echo 3;
                     if ( ($this->isLetter($char)) || ($char == '_') ) {
                         $state = 4;
                         $name .= $char;
-                        $char  = $this->file->getNextChar();
+                        $char  = $this->file->nextChar();
                     } else {
-                        // exception
+                        throw ExceptionFactory::createUnexpectedChar(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine(),
+                                $char
+                        );
                     }
 
                     break;
 
                 case 4:
-                    echo 4;
-                    if ( ($this->isLetter($char)) || ($char == '_') || (ctype_digit($char)) ) {
+                    if ( ($this->isAlpha($char)) || ($char == '_') ) {
                         $state = 4;
                         $name .= $char;
-                        $char  = $this->file->getNextChar();
+                        $char  = $this->file->nextChar();
                     } else if ($this->isSpace($char)) {
-                        $this->file->goBack();
                         break 2;
                     } else {
-                        // exception
+                        throw ExceptionFactory::createUnexpectedChar(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine(),
+                                $char
+                        );
                     }
 
                     break;
@@ -218,21 +378,13 @@ class Scanner
         return new TagToken(Token::T_OPEN_TAG, $ns, $name);
     }
 
-    public function nextChar($allowed = null)
+    public function nextChar()
     {
-        $allowed = (string) $allowed;
-
-        if (strlen($allowed) > 1)
-            throw new \LengthException ('Allowed must be a char');
-
         while (! $this->file->isEOF()) {
 
-            $char = $this->file->getNextChar();
+            $char = $this->file->nextChar();
 
             if ($this->isSpace($char))
-                continue;
-
-            if ($char === $allowed)
                 continue;
 
             return $char;
@@ -250,31 +402,21 @@ class Scanner
         $readPos = 0;
 
         while ( (! $this->file->isEOF()) && ($readPos < $pos) ) {
-            $text .= $this->file->getNextChar();
+            $text .= $this->file->nextChar();
             $readPos++;
         }
 
         return $text;
     }
 
-    /*    public function getNextToken()
-    {
-        if ($this->file->isEOF())
-            return false;
-
-        $firstChar = $this->seekToNextChar();
-        $token     = null;
-
-        $this->file->saveState();
-
-        $token = $this->nextTag();
-    }
-    
- */
-
     protected function isLetter($char)
     {
         return (bool) preg_match('/[a-zA-Z]/', $char);
+    }
+
+    protected function isAlpha($char)
+    {
+        return (bool) preg_match('/[a-zA-Z0-9]/', $char);
     }
 
     protected function isSpace($char)

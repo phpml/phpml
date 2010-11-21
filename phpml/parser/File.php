@@ -6,7 +6,6 @@ use phpml\exception\util\ExceptionFactory;
 
 class File
 {
-
     protected $filePointer;
     protected $currentPos;
     protected $currentLine;
@@ -37,10 +36,11 @@ class File
         return feof($this->filePointer);
     }
 
-    public function getNextChar()
+    public function nextChar()
     {
         $char = fgetc($this->filePointer);
 
+        // EOF
         if ($char === false)
             return false;
 
@@ -54,8 +54,9 @@ class File
 
     public function goBack()
     {
+        // Empty file or file that wasn't read yet
         if (fseek($this->filePointer, -1, SEEK_CUR) == -1)
-            throw new \UnderflowException ('Cannot go back in a file that wasn\'t read yet or is empty');
+            return false;
 
         $char = fgetc($this->filePointer);
 
@@ -77,14 +78,11 @@ class File
         $needle  = (array) $needle;
         
         foreach ($needle as $n) {
-            $lastNeedle = $needles[] = array(
+            $needles[] = array(
                 $n,
                 strlen($n),
                 0
             );
-
-            if ($lastNeedle[1] == 0)
-                throw new \LengthException ('Needle cannot be empty');
         }
 
         $readPos = 0;
@@ -97,7 +95,7 @@ class File
             foreach ($needles as &$n) {
                 if ( ($n[2] < $n[1]) && ($char == $n[0][$n[2]]) ) {
                     $n[2]++;
-                } else if ($n[2] == $n[1]) {
+                } else if ( ($n[1] > 0) && ($n[2] == $n[1]) ) {
                     $found = true;
                     break 2;
                 } else {
@@ -120,14 +118,12 @@ class File
         $this->savedState = new \StdClass();
         $this->savedState->currentLine = $this->currentLine;
         $this->savedState->currentPos  = $this->currentPos;
-        $this->savedState->filePointer = $this->filePointer;
     }
 
     public function restoreState()
     {
         $this->currentLine = $this->savedState->currentLine;
         $this->currentPos  = $this->savedState->currentPos;
-        $this->filePointer = $this->savedState->filePointer;
         $this->savedState  = null;
         fseek($this->filePointer, $this->currentPos);
     }
