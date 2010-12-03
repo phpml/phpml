@@ -29,6 +29,9 @@ class ExceptionFactory {
         return new IOException($_file, $_line, sprintf('Cannot open file %s for %s', $file, $mode));
     }
 
-
+    public static function createUnexpectedEOF($_file, $_line, $file, $line)
+    {
+        return new ParserException($_file, $_line, sprintf('Unexpected end of file in %s on line %d', $file, $line));
+    }
 }
 ?>

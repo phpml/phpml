@@ -93,22 +93,23 @@ class File
             $readPos++;
 
             foreach ($needles as &$n) {
-                if ( ($n[2] < $n[1]) && ($char == $n[0][$n[2]]) ) {
+                if ( ($n[2] < $n[1]) && ($char == $n[0][$n[2]]) )
                     $n[2]++;
-                } else if ( ($n[1] > 0) && ($n[2] == $n[1]) ) {
+                else
+                    $n[2] = 0;
+             
+                if ( ($n[1] > 0) && ($n[2] == $n[1]) ) {
                     $found = true;
                     break 2;
-                } else {
-                    $n[2] = 0;
                 }
             }
         }
-
+        
         // Back the cursor to the inicial position
         fseek($this->filePointer, -$readPos, SEEK_CUR);
-
+        
         if ($found)
-            return $readPos - ($n[1] + 1);
+            return $readPos - $n[1];
 
         return false;
     }
