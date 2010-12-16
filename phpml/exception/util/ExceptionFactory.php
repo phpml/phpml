@@ -24,6 +24,11 @@ class ExceptionFactory {
         return new ParserException($_file, $_line, sprintf('Cannot find char %s in %s on line %d', $char, $file, $line));
     }
 
+    public static function createIllegalSpace($_file, $_line, $file, $line)
+    {
+        return new ParserException($_file, $_line, sprintf('Illegal space found in %s on line %d', $file, $line));
+    }
+
     public static function createOpenFile($_file, $_line, $file, $mode)
     {
         return new IOException($_file, $_line, sprintf('Cannot open file %s for %s', $file, $mode));

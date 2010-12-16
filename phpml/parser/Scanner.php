@@ -181,6 +181,8 @@ class Scanner
         }
     }
 
+    // TODO: Is this right? Using find()
+    // Can have any char inside ' or "
     public function parseValue()
     {
         $char  = $this->file->nextChar();
@@ -543,6 +545,15 @@ class Scanner
                                 $this->file->getCurrentLine()
                             );
 
+                        // Illegal space after :
+                        } elseif ($this->isSpace($char)) {
+                            throw ExceptionFactory::createIllegalSpace(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine()
+                            );
+
                         // Unexpected Char
                         } else {
                             throw ExceptionFactory::createUnexpectedChar(
@@ -566,7 +577,7 @@ class Scanner
                         $char  = $this->file->nextChar();
 
                     // If the next char is \s, we got the name
-                    } else if ($this->isSpace($char)) {
+                    } elseif ($this->isSpace($char)) {
                         break 2;
 
                     // Exception
