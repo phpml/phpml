@@ -65,7 +65,7 @@ class Scanner
 
                 // T_CLOSE
                 } else if ($char == '/') {
-                    parseClose();
+                    return $this->parseClose();
 
                 // Exception
                 } else {
@@ -181,9 +181,81 @@ class Scanner
         }
     }
 
+    protected function parseClose()
+    {
+        // Must be /
+        $char = $this->file->nextChar();
+
+        // Unexpected char
+        if ($char != '/') {
+
+            // Unexpected EOF
+            if ($char === false) {
+                throw ExceptionFactory::createUnexpectedEOF(
+                    __FILE__,
+                    __LINE__,
+                    $this->file->getFileName(),
+                    $this->file->getCurrentLine()
+                );
+
+            // Unexpected char
+            } else {
+                throw ExceptionFactory::createUnexpectedChar(
+                    __FILE__,
+                    __LINE__,
+                    $this->file->getFileName(),
+                    $this->file->getCurrentLine(),
+                    $char
+                );
+            }
+        }
+
+        // Must be >
+        $char = $this->file->nextChar();
+
+        // We have a problem here
+        if ($char != '>') {
+
+            // Illegal space
+            if ($this->isSpace($char)) {
+                throw ExceptionFactory::createIllegalSpace(
+                    __FILE__,
+                    __LINE__,
+                    $this->file->getFileName(),
+                    $this->file->getCurrentLine()
+                );
+
+            // Unexpected EOF
+            } elseif ($char === false) {
+                throw ExceptionFactory::createUnexpectedEOF(
+                    __FILE__,
+                    __LINE__,
+                    $this->file->getFileName(),
+                    $this->file->getCurrentLine()
+                );
+
+            // Unexpected char
+            } else {
+                throw ExceptionFactory::createUnexpectedChar(
+                    __FILE__,
+                    __LINE__,
+                    $this->file->getFileName(),
+                    $this->file->getCurrentLine(),
+                    $char
+                );
+            }
+        }
+
+        // Next lookAhead
+        self::$lookAhead = Token::T_OPEN_TAG|Token::T_CLOSE_TAG|Token::T_TEXT;
+
+        // T_CLOSE found token
+        return new Token(Token::T_CLOSE);
+    }
+
     // TODO: Is this right? Using find()
     // Can have any char inside ' or "
-    public function parseValue()
+    protected function parseValue()
     {
         $char  = $this->file->nextChar();
         $state = 0;
@@ -281,7 +353,7 @@ class Scanner
         return new SimpleToken(Token::T_VALUE, $value);
     }
 
-    public function parseAttribute()
+    protected function parseAttribute()
     {
         $char  = $this->file->nextChar();
         $state = 0;
@@ -410,7 +482,7 @@ class Scanner
 
     // TODO: Exception when has space between : or <
     // Ex: <php :, <php: L, < php
-    public function parseOpenTag()
+    protected function parseOpenTag()
     {
         $char  = $this->file->nextChar();
         $state = 0;
@@ -615,7 +687,7 @@ class Scanner
         return new TagToken(Token::T_OPEN_TAG, $ns, $name);
     }
 
-    public function nextChar()
+    protected function nextChar()
     {
         while (! $this->file->isEOF()) {
 
@@ -630,7 +702,7 @@ class Scanner
         return false;
     }
 
-    public function forward($pos = null)
+    protected function forward($pos = null)
     {
         if (is_null($pos))
             return $this->file->readAll();

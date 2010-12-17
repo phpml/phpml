@@ -20,10 +20,12 @@ $file = new File('tests/testFiles/find_1');
 $scanner = new Scanner($file);
 
 try {
-var_dump($scanner->nextToken());
-var_dump($scanner->nextToken());
-var_dump($scanner->nextToken());
-var_dump($scanner->nextToken());
+    var_dump($scanner->nextToken());
+    var_dump($scanner->nextToken());
+    var_dump($scanner->nextToken());
+    var_dump($scanner->nextToken());
+    var_dump($scanner->nextToken());
+    var_dump($scanner->nextToken());
 } catch (Exception $e) {
     echo $e->getMessage();
 }
