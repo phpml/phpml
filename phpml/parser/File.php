@@ -69,7 +69,7 @@ class File
 
     public function readAll()
     {
-        return fread($this->filePointer, (filesize($this->name) - $this->currentPos));
+        return stream_get_contents($this->filePointer);
     }
 
     public function find($needle)

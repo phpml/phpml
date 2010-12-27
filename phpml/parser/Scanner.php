@@ -59,9 +59,9 @@ class Scanner
 
                 // T_END
                 } else if ($char == '>') {
-                    parseEnd();
+                    $this->forward(1);
                     self::$lookAhead = Token::T_OPEN_TAG|Token::T_CLOSE_TAG|Token::T_TEXT;
-                    return new token\SimpleToken($type, $value);
+                    return new Token(Token::T_END);
 
                 // T_CLOSE
                 } else if ($char == '/') {
@@ -130,25 +130,43 @@ class Scanner
                 break;
 
             case Token::T_OPEN_TAG|Token::T_CLOSE_TAG|Token::T_TEXT:
-                $char = proximoCharNaoEspaco();
-                switch ($char) {
-                    // busca open tag pelos namespaces definidos
-                    case openTag():
-                        parseOpenTag();
-                        break;
 
-                    case closeTag():
-                        parseCloseTag();
-                        break;
+                // TODO: Find foreach registered namespace
+                // Try to find T_OPEN_TAG
+                $posOpenTag = $this->file->find('<php:');
 
-                    case text():
-                        parseText();
-                        break;;
+                // Try to find T_CLOSE_TAG
+                $posCloseTag = $this->file->find('</php:');
 
-                    default:
-                        // mostra os tokens esperados
-                        erro();
+                // Nothing found
+                if ( ($posOpenTag === false) && ($posCloseTag === false) ) {
+                    return new SimpleToken(Token::T_TEXT, $this->forward());
+                    
+                // T_OPEN_TAG found
+                } elseif ($posOpenTag !== false) {
+                    
+                    // We have T_TEXT
+                    if ($posOpenTag > 0) {
+                        self::$lookAhead = Token::T_OPEN_TAG|Token::T_CLOSE_TAG;
+                        return new SimpleToken(Token::T_TEXT, $this->forward($posOpenTag));
+                    }
+
+                    // We have T_OPEN_TAG
+                    return $this->parseOpenTag();
+
+                // T_CLOSE_TAG found
+                } else {
+                    
+                    // We have T_TEXT
+                    if ($posCloseTag > 0) {
+                        self::$lookAhead = Token::T_OPEN_TAG|Token::T_CLOSE_TAG;
+                        return new SimpleToken(Token::T_TEXT, $this->forward($posCloseTag));
+                    }
+
+                    // We have T_CLOSE_TAG
+                    return $this->parseCloseTag();
                 }
+
                 break;
 
             case Token::T_OPEN_TAG|Token::T_CLOSE_TAG:
@@ -170,7 +188,7 @@ class Scanner
                 if ($this->isLetter($char)) {
                     return $this->parseOpenTag();
                 } else {
-                    parseCloseTag();
+                    return $this->parseCloseTag();
                 }
 
                 break;
@@ -179,6 +197,244 @@ class Scanner
                 // estado desconhecido
                  erro();
         }
+    }
+
+    protected function parseCloseTag()
+    {
+        $char  = $this->file->nextChar();
+        $state = 0;
+        $ns    = '';
+        $name  = '';
+
+        while (true) {
+            switch ($state) {
+                case 0:
+
+                    // Must start with <
+                    if ($char == '<') {
+                        $state = 1;
+                        $char  = $this->file->nextChar();
+
+                    // Exception
+                    } else {
+
+                        // Unexpected EOF
+                        if ($char == false) {
+                            throw ExceptionFactory::createUnexpectedEOF(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine()
+                            );
+
+                        // Unexpected Char
+                        } else {
+                            throw ExceptionFactory::createUnexpectedChar(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine(),
+                                $char
+                            );
+                        }
+                    }
+
+                    break;
+
+                case 1:
+
+                    // Second char must be /
+                    if ($char == '/') {
+                        $state = 2;
+                        $char  = $this->file->nextChar();
+
+                    // Exception
+                    } else {
+
+                        // Unexpected EOF
+                        if ($char == false) {
+                            throw ExceptionFactory::createUnexpectedEOF(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine()
+                            );
+
+                        // Unexpected Char
+                        } else {
+                            throw ExceptionFactory::createUnexpectedChar(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine(),
+                                $char
+                            );
+                        }
+                    }
+
+                    break;
+
+                case 2:
+
+                    // The first char after / can be [a-zA-Z] or _
+                    if ( ($this->isLetter($char)) || ($char == '_') ) {
+                        $state = 3;
+                        $ns   .= $char;
+                        $char  = $this->file->nextChar();
+
+                    // Exception
+                    } else {
+
+                        // Unexpected EOF
+                        if ($char == false) {
+                            throw ExceptionFactory::createUnexpectedEOF(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine()
+                            );
+
+                        // Unexpected Char
+                        } else {
+                            throw ExceptionFactory::createUnexpectedChar(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine(),
+                                $char
+                            );
+                        }
+                    }
+
+                    break;
+
+                case 3:
+
+                    // From the second char after / onwards can be [a-zA-Z0-9] or _
+                    if ( ($this->isAlpha($char)) || ($char == '_') ) {
+                        $state = 3;
+                        $ns   .= $char;
+                        $char  = $this->file->nextChar();
+
+                    // If the next char is :, we already have the namespace
+                    } else if ($char == ':') {
+                        $state = 4;
+                        $char  = $this->file->nextChar();
+
+                    // Exception
+                    } else {
+
+                        // Unexpected EOF
+                        if ($char == false) {
+                            throw ExceptionFactory::createUnexpectedEOF(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine()
+                            );
+
+                        // Unexpected Char
+                        } else {
+                            throw ExceptionFactory::createUnexpectedChar(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine(),
+                                $char
+                            );
+                        }
+                    }
+
+                    break;
+
+                case 4:
+
+                    // The first char after : can be [a-zA-Z] or _
+                    if ( ($this->isLetter($char)) || ($char == '_') ) {
+                        $state = 5;
+                        $name .= $char;
+                        $char  = $this->file->nextChar();
+
+                    // Exception
+                    } else {
+
+                        // Unexpected EOF
+                        if ($char == false) {
+                            throw ExceptionFactory::createUnexpectedEOF(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine()
+                            );
+
+                        // Illegal space after :
+                        } elseif ($this->isSpace($char)) {
+                            throw ExceptionFactory::createIllegalSpace(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine()
+                            );
+
+                        // Unexpected Char
+                        } else {
+                            throw ExceptionFactory::createUnexpectedChar(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine(),
+                                $char
+                            );
+                        }
+                    }
+
+                    break;
+
+                case 5:
+
+                    // From the second char after : onwards can be [a-zA-Z0-9] or _
+                    if ( ($this->isAlpha($char)) || ($char == '_') ) {
+                        $state = 5;
+                        $name .= $char;
+                        $char  = $this->file->nextChar();
+
+                    // If the next char is >, we got the name
+                    } elseif ($char == '>') {
+                        break 2;
+
+                    // Exception
+                    } else {
+
+                        // Unexpected EOF
+                        if ($char == false) {
+                            throw ExceptionFactory::createUnexpectedEOF(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine()
+                            );
+
+                        // Unexpected Char
+                        } else {
+                            throw ExceptionFactory::createUnexpectedChar(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine(),
+                                $char
+                            );
+                        }
+                    }
+
+                    break;
+            }
+        }
+
+        // Next lookAhead
+        self::$lookAhead = Token::T_OPEN_TAG|Token::T_CLOSE_TAG|Token::T_TEXT;
+
+        // T_CLOSE_TAG found token
+        return new TagToken(Token::T_CLOSE_TAG, $ns, $name);
     }
 
     protected function parseClose()

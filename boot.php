@@ -26,6 +26,8 @@ try {
     var_dump($scanner->nextToken());
     var_dump($scanner->nextToken());
     var_dump($scanner->nextToken());
+    var_dump($scanner->nextToken());
+    var_dump($scanner->nextToken());
 } catch (Exception $e) {
     echo $e->getMessage();
 }
