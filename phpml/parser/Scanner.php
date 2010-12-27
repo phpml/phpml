@@ -142,6 +142,26 @@ class Scanner
                 if ( ($posOpenTag === false) && ($posCloseTag === false) ) {
                     return new SimpleToken(Token::T_TEXT, $this->forward());
                     
+                // Both found
+                } elseif ( ($posOpenTag !== false) && ($posCloseTag !== false) ) {
+
+                    // T_OPEN_TAG comes first
+                    if ($posOpenTag < $posCloseTag) {
+                        // We have T_TEXT
+                        if ($posOpenTag > 0) {
+                            self::$lookAhead = Token::T_OPEN_TAG|Token::T_CLOSE_TAG;
+                            return new SimpleToken(Token::T_TEXT, $this->forward($posOpenTag));
+                        }
+
+                    // T_CLOSE_TAG comes first
+                    } else {
+                        // We have T_TEXT
+                        if ($posCloseTag > 0) {
+                            self::$lookAhead = Token::T_OPEN_TAG|Token::T_CLOSE_TAG;
+                            return new SimpleToken(Token::T_TEXT, $this->forward($posCloseTag));
+                        }
+                    }
+
                 // T_OPEN_TAG found
                 } elseif ($posOpenTag !== false) {
                     
