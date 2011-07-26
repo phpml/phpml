@@ -20,10 +20,19 @@ class File
         $this->savedState  = null;
         $this->name        = $name;
 
+        $this->fileExists();
         $this->openFile();
     }
 
-    public function openFile()
+    protected function fileExists()
+    {
+        if (file_exists($this->getFileName()))
+            return;
+            
+        throw ExceptionFactory::createFileDoesNotExist(__FILE__, __LINE__, $this->name);
+    }
+    
+    protected function openFile()
     {
         if (! is_readable($this->name))
             throw ExceptionFactory::createOpenFile(__FILE__, __LINE__, $this->getFileName(), 'reading');
