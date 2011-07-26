@@ -6,3 +6,5 @@ function loadTest($name)
 }
 
 spl_autoload_register('loadTest');
+
+define('FILES_DIR', __DIR__ . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR);
