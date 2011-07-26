@@ -6,10 +6,10 @@ function __autoload($name)
 }
 
 
-use \phpml\parser\File,
-    \phpml\parser\Scanner;
+use \phpml\lib\parser\File,
+    \phpml\lib\parser\Scanner;
 
-$file = new File('tests/testFiles/find_1');
+$file = new File('tests/_files/find_1');
 
 //var_dump(ftell($file->savedState->filePointer));
 //var_dump(ftell($file->getFilePointer()));
