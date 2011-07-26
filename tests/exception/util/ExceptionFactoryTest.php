@@ -10,7 +10,7 @@ use phpml\lib\exception\util\ExceptionFactory,
 require_once __DIR__ . '/../../bootstrap.php';
 
 /**
- * ExceptionFactory test case.
+ * ExceptionFactory test case
  */
 class ExceptionFactoryTest extends \PHPUnit_Framework_TestCase
 {

@@ -1,1 +1,5 @@
 nbproject
+.settings
+.buildpath
+tests/cc/
+.project

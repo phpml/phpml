@@ -3,8 +3,11 @@
 namespace phpml\lib\parser\token;
 
 /**
+ * Token main class
  *
- * @author Thiago
+ * @author Thiago Rigo <thiagophx@gmail.com>
+ * @package lib
+ * @subpackage parser.token
  */
 class Token
 {

@@ -2,7 +2,7 @@
 
 function __autoload($name)
 {
-    require str_replace('\\', DIRECTORY_SEPARATOR, $name) . '.php';
+    require '../' . str_replace('\\', DIRECTORY_SEPARATOR, $name) . '.php';
 }
 
 

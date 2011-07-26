@@ -2,6 +2,15 @@
 
 namespace phpml\lib\parser\token;
 
+/**
+ * SimpleToken class
+ *
+ * T_TEXT, T_VALUE, T_ATTRIBUTE
+ *
+ * @author Thiago Rigo <thiagophx@gmail.com>
+ * @package lib
+ * @subpackage parser.token
+ */
 class SimpleToken extends Token
 {
     protected $value;

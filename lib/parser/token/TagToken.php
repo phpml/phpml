@@ -3,9 +3,13 @@
 namespace phpml\lib\parser\token;
 
 /**
- * Description of TagToken
+ * TagToken class
  *
- * @author Thiago
+ * T_OPEN_TAG, T_CLOSE_TAG
+ *
+ * @author Thiago Rigo <thiagophx@gmail.com>
+ * @package lib
+ * @subpackage parser.token
  */
 class TagToken extends Token
 {
