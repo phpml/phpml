@@ -38,5 +38,10 @@ class ExceptionFactory {
     {
         return new ParserException($_file, $_line, sprintf('Unexpected end of file in %s on line %d', $file, $line));
     }
+    
+    public static function createFileDoesNotExist($_file, $_line, $file)
+    {
+        return new IOException($_file, $_line, sprintf('File: %s doesn\'t exist', $file));
+    }
 }
 ?>

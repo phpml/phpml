@@ -68,5 +68,16 @@ class ExceptionFactoryTest extends \PHPUnit_Framework_TestCase
 		$this->assertSame($parserException->getMessage(), $exception->getMessage());
 		$this->assertInstanceOf('phpml\lib\exception\ParserException', $exception);		
 	}
+	
+	public function testCreateFileDoesNotExistException()
+	{
+	    $ioException = new IOException('source.php', 8, 'File: source.phpml doesn\'t exist');
+	    $exception   = ExceptionFactory::createFileDoesNotExist('source.php', 8, 'source.phpml');
+	    
+	    $this->assertSame($ioException->getFile(), $exception->getFile());
+	    $this->assertSame($ioException->getLine(), $exception->getLine());
+	    $this->assertSame($ioException->getMessage(), $exception->getMessage());
+	    $this->assertInstanceOf('phpml\lib\exception\IOException', $exception);
+	}
 
 }
