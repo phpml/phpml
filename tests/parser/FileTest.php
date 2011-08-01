@@ -54,6 +54,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
         
         $this->assertEquals($file->getCurrentLine(), 1);
         $this->assertEquals($file->getCurrentPos(), 0);
+        $this->assertEquals($file->nextChar(), "\n");
     }
     
     public function testReadChar()
@@ -145,6 +146,17 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($file->getCurrentLine(), 3);
         $this->assertEquals($file->getCurrentPos(), 6);
+        
+        $this->assertEquals($file->nextChar(), "\r");
+        $this->assertEquals($file->nextChar(), "\n");
+        
+        $this->assertEquals($file->getCurrentLine(), 4);
+        $this->assertEquals($file->getCurrentPos(), 8);
+        
+        $this->assertEquals($file->nextChar(), 3);
+        
+        $this->assertEquals($file->getCurrentLine(), 4);
+        $this->assertEquals($file->getCurrentPos(), 9);
     }
     
     public function testFileName()
@@ -159,7 +171,57 @@ class FileTest extends \PHPUnit_Framework_TestCase
      */
     public function testFileDoesNotExist()
     {
-        $file = new File('it_does_not_exist');
+        $file = new File(FILES_DIR . 'it_does_not_exist');
+    }
+    
+    public function testRemainingContent()
+    {
+        $file = new File(FILES_DIR . 'not_empty_file');
+        
+        $file->nextChar();
+        $this->assertEquals('ot_empty_file', $file->readAll());
+    }
+    
+    public function testRewindingNotReadFile()
+    {
+        $file = new File(FILES_DIR . 'not_empty_file');
+        
+        $this->assertFalse($file->goBack());
+    }
+    
+    public function testRewindingEmptyFile()
+    {
+        $file = new File(FILES_DIR . 'empty_file');
+        
+        $this->assertFalse($file->goBack());
+    }
+    
+    public function testRewindingOneLineFile()
+    {
+        $file = new File(FILES_DIR . 'not_empty_file');
+        
+        $this->assertEquals(1, $file->getCurrentLine());
+        $this->assertEquals(0, $file->getCurrentPos());
+        
+        $file->nextChar();        
+        $this->assertNull($file->goBack());
+        
+        $this->assertEquals(1, $file->getCurrentLine());
+        $this->assertEquals(0, $file->getCurrentPos());
+    }
+    
+    public function testRewindingTwoLinesFile()
+    {
+        $file = new File(FILES_DIR . 'two_lines_file');
+        
+        $this->assertEquals(1, $file->getCurrentLine());
+        $this->assertEquals(0, $file->getCurrentPos());
+        
+        $file->nextChar();        
+        $this->assertNull($file->goBack());
+        
+        $this->assertEquals(1, $file->getCurrentLine());
+        $this->assertEquals(0, $file->getCurrentPos());
     }
 }
 

@@ -63,7 +63,7 @@ class File
 
     public function goBack()
     {
-        // Empty file or file that wasn't read yet
+        // Empty file or file that hasn't been read yet
         if (fseek($this->filePointer, -1, SEEK_CUR) == -1)
             return false;
 

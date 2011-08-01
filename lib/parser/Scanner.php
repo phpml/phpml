@@ -529,6 +529,7 @@ class Scanner
     }
 
     // TODO: Is this right? Using find()
+    // TODO: Add backslash for comments
     // Can have any char inside ' or "
     protected function parseValue()
     {
