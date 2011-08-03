@@ -11,6 +11,7 @@ class File
     protected $currentLine;
     protected $savedState;
     protected $name;
+    protected $fullName;
 
     public function __construct($name)
     {
@@ -19,6 +20,7 @@ class File
         $this->currentLine = 1;
         $this->savedState  = null;
         $this->name        = $name;
+        $this->fullName    = realpath($name);
 
         $this->fileExists();
         $this->openFile();
@@ -74,6 +76,8 @@ class File
 
         fseek($this->filePointer, -1, SEEK_CUR);
         $this->currentPos--;
+        
+        return true;
     }
 
     public function readAll()
@@ -81,6 +85,7 @@ class File
         return stream_get_contents($this->filePointer);
     }
 
+    // TODO: Validate if the needle has length > 0
     public function find($needle)
     {
         $needles = array();
@@ -157,6 +162,8 @@ class File
             // Mac
             return true;
         }
+        
+        return false;
     }
 
     public function getCurrentPos()
@@ -176,7 +183,7 @@ class File
 
     public function getFileName()
     {
-        return realpath($this->name);
+        return $this->fullName;
     }
 
 }

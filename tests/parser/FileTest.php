@@ -204,7 +204,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $file->getCurrentPos());
         
         $file->nextChar();        
-        $this->assertNull($file->goBack());
+        $this->assertTrue($file->goBack());
         
         $this->assertEquals(1, $file->getCurrentLine());
         $this->assertEquals(0, $file->getCurrentPos());
@@ -218,10 +218,46 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $file->getCurrentPos());
         
         $file->nextChar();        
-        $this->assertNull($file->goBack());
+        $this->assertTrue($file->goBack());
         
         $this->assertEquals(1, $file->getCurrentLine());
         $this->assertEquals(0, $file->getCurrentPos());
+    }
+    
+    public function testFindOneNeedle()
+    {
+        $file = new File(FILES_DIR . 'find_1');
+        
+        $this->assertEquals(8, $file->find('<php:'));
+        $this->assertEquals(0, $file->getCurrentPos());
+        $this->assertEquals(1, $file->getCurrentLine());
+    }
+    
+    public function testFindMultipleNeedles()
+    {
+        $file = new File(FILES_DIR . 'find_1');
+        
+        $this->assertEquals(8, $file->find(array('</div>', '<php:', '</php:')));
+        $this->assertEquals(0, $file->getCurrentPos());
+        $this->assertEquals(1, $file->getCurrentLine());
+    }
+    
+    public function testCannotFindOneNeedle()
+    {
+        $file = new File(FILES_DIR . 'find_1');
+        
+        $this->assertFalse($file->find('<php:Div'));
+        $this->assertEquals(0, $file->getCurrentPos());
+        $this->assertEquals(1, $file->getCurrentLine());
+    }
+    
+    public function testCannotFindMultipleNeedles()
+    {
+        $file = new File(FILES_DIR . 'find_1');
+        
+        $this->assertFalse($file->find(array('</div>', '<ph:', '</ph:')));
+        $this->assertEquals(0, $file->getCurrentPos());
+        $this->assertEquals(1, $file->getCurrentLine());
     }
 }
 
