@@ -139,7 +139,15 @@ class Scanner
 
                 // Nothing found
                 if ( ($posOpenTag === false) && ($posCloseTag === false) ) {
-                    return new SimpleToken(Token::T_TEXT, $this->forward());
+                    
+                    // There are some characters to parse
+                    if ($this->nextChar() !== false) {
+                        $this->file->goBack();
+                        return new SimpleToken(Token::T_TEXT, $this->forward());
+                    }
+                    
+                    // Nothing to parse, we're done
+                    return;
                     
                 // Both found
                 } elseif ( ($posOpenTag !== false) && ($posCloseTag !== false) ) {
