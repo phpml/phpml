@@ -1,9 +1,11 @@
 <?php
 
-function __autoload($name)
+function load($name)
 {
     require '../' . str_replace('\\', DIRECTORY_SEPARATOR, $name) . '.php';
 }
+
+spl_autoload_register('load');
 
 
 use \phpml\lib\parser\File,
@@ -16,7 +18,7 @@ use \phpml\lib\parser\File,
 
 
 try {
-    $file = new File('tests/_file/find_1');
+    $file = new File('tests/_files/simple_parse');
     $scanner = new Scanner($file);
 
     while (($t = $scanner->nextToken()) != false)
@@ -25,3 +27,4 @@ try {
 } catch (Exception $e) {
     echo $e->getMessage() . ' - ' . $e->getFile() . ':' . $e->getLine();
 }
+

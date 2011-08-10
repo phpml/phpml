@@ -1,8 +1,11 @@
 <?php
-namespace tests\phpml\parser;
 
-use phpml\parser\Scanner,
-    phpml\parser\File;
+namespace phpml\tests\parser;
+
+use phpml\lib\parser\Scanner,
+    phpml\lib\parser\File;
+    
+require_once __DIR__ . '/../bootstrap.php';
 
 /**
  * Test class for Scanner.

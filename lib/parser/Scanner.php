@@ -928,6 +928,11 @@ class Scanner
                     } elseif ($this->isSpace($char)) {
                         break 2;
 
+                    // If the next char is >, we got the T_END
+                    } elseif ($char == '>') {
+                        $this->file->goBack();
+                        break 2;
+                        
                     // Exception
                     } else {
 

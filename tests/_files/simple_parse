@@ -1,0 +1,7 @@
+<html>
+<php:Label id="name">Thiago</php:Label>
+<php:Div>
+	<a href="#">LINK</a>
+	<php:Image src="#" />
+</php:Div>
+</html>
