@@ -35,7 +35,7 @@ class Scanner
                     return new SimpleToken(Token::T_TEXT, $this->forward());
 
                 // Has T_TEXT to get
-                } else if ($pos > 0) {
+                } elseif ($pos > 0) {
                     self::$lookAhead = Token::T_OPEN_TAG|Token::T_CLOSE_TAG;
                     return new SimpleToken(Token::T_TEXT, $this->forward($pos));
                     
@@ -57,20 +57,20 @@ class Scanner
                     return $this->parseAttribute();
 
                 // T_END
-                } else if ($char == '>') {
+                } elseif ($char == '>') {
                     $this->forward(1);
                     self::$lookAhead = Token::T_OPEN_TAG|Token::T_CLOSE_TAG|Token::T_TEXT;
                     return new Token(Token::T_END);
 
                 // T_CLOSE
-                } else if ($char == '/') {
+                } elseif ($char == '/') {
                     return $this->parseClose();
 
                 // Exception
                 } else {
 
                     // Unexpected EOF
-                    if ($char == false) {
+                    if ($char === false) {
                         throw ExceptionFactory::createUnexpectedEOF(
                                 __FILE__,
                                 __LINE__,
@@ -154,6 +154,7 @@ class Scanner
 
                     // T_OPEN_TAG comes first
                     if ($posOpenTag < $posCloseTag) {
+                        
                         // We have T_TEXT
                         if ($posOpenTag > 0) {
                             self::$lookAhead = Token::T_OPEN_TAG|Token::T_CLOSE_TAG;
@@ -162,6 +163,7 @@ class Scanner
 
                     // T_CLOSE_TAG comes first
                     } else {
+                        
                         // We have T_TEXT
                         if ($posCloseTag > 0) {
                             self::$lookAhead = Token::T_OPEN_TAG|Token::T_CLOSE_TAG;
@@ -344,7 +346,7 @@ class Scanner
                         $char  = $this->file->nextChar();
 
                     // If the next char is :, we already have the namespace
-                    } else if ($char == ':') {
+                    } elseif ($char == ':') {
                         $state = 4;
                         $char  = $this->file->nextChar();
 
@@ -441,6 +443,15 @@ class Scanner
                                 $this->file->getCurrentLine()
                             );
 
+                        // Illegal space before >
+                        } elseif ($this->isSpace($char)) {
+                            throw ExceptionFactory::createIllegalSpace(
+                                __FILE__,
+                                __LINE__,
+                                $this->file->getFileName(),
+                                $this->file->getCurrentLine()
+                            );
+                            
                         // Unexpected Char
                         } else {
                             throw ExceptionFactory::createUnexpectedChar(
@@ -556,7 +567,7 @@ class Scanner
                        $pos   = $this->file->find('"');
 
                     // Ex: 'value'
-                    } else if ($char == "'") {
+                    } elseif ($char == "'") {
                        $state = 2;
                        $pos   = $this->file->find("'");
 
@@ -689,12 +700,12 @@ class Scanner
 
                     // Space indicates the end of the T_ATTRIBUTE
                     // But we have to eat the next = char
-                    } else if ($this->isSpace($char)) {
+                    } elseif ($this->isSpace($char)) {
                         $state = 2;
                         $char  = $this->nextChar();
 
                     // If the next char is =, we're done
-                    } else if ($char == '=') {
+                    } elseif ($char == '=') {
                         break 2;
 
                     // Exception
@@ -851,7 +862,7 @@ class Scanner
                         $char  = $this->file->nextChar();
 
                     // If the next char is :, we already have the namespace
-                    } else if ($char == ':') {
+                    } elseif ($char == ':') {
                         $state = 3;
                         $char  = $this->file->nextChar();
                     

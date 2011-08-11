@@ -18,7 +18,7 @@ use \phpml\lib\parser\File,
 
 
 try {
-    $file = new File('tests/_files/simple_parse');
+    $file = new File('tests/_files/find_1');
     $scanner = new Scanner($file);
 
     while (($t = $scanner->nextToken()) != false)
