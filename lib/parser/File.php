@@ -4,6 +4,13 @@ namespace phpml\lib\parser;
 
 use phpml\lib\exception\util\ExceptionFactory;
 
+/**
+ * File class
+ *
+ * @author Thiago Rigo <thiagophx@gmail.com>
+ * @package lib
+ * @subpackage parser
+ */
 class File
 {
     protected $filePointer;
@@ -86,6 +93,8 @@ class File
     }
 
     // TODO: Validate if the needle has length > 0
+    // otherwise we have to read the whole file to find out
+    // that there is no $needle = ''
     public function find($needle)
     {
         $needles = array();

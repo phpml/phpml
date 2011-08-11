@@ -7,7 +7,13 @@ use phpml\lib\parser\token\Token,
     phpml\lib\parser\token\TagToken,
     phpml\lib\exception\util\ExceptionFactory;
 
-
+/**
+ * Scanner class
+ *
+ * @author Thiago Rigo <thiagophx@gmail.com>
+ * @package lib
+ * @subpackage parser
+ */
 class Scanner
 {
     protected $file;
