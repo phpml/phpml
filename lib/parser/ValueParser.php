@@ -2,6 +2,10 @@
 
 namespace phpml\lib\parser;
 
+use phpml\lib\exception\util\ExceptionFactory,
+    phpml\lib\parser\token\Token,
+    phpml\lib\parser\token\SimpleToken;
+
 /**
  * ValueParser class
  *
@@ -11,5 +15,101 @@ namespace phpml\lib\parser;
  */
 class ValueParser implements TokenParser
 {
-    public static function parse(Scanner $scanner);
+    public static function parse(Scanner $scanner)
+    {
+        $char  = $scanner->file->nextChar();
+        $state = 0;
+        $value = '';
+        $pos   = 0;
+
+        while (true) {
+            switch ($state) {
+                case 0:
+
+                    // Ex: "value"
+                    if ($char == '"') {
+                       $state = 1;
+                       $pos   = $scanner->file->find('"');
+
+                    // Ex: 'value'
+                    } elseif ($char == "'") {
+                       $state = 2;
+                       $pos   = $scanner->file->find("'");
+
+                    // Exception
+                    } else {
+
+                        // Unexpected EOF
+                        if ($char == false) {
+                            throw ExceptionFactory::createUnexpectedEOF(
+                                __FILE__,
+                                __LINE__,
+                                $scanner->file->getFileName(),
+                                $scanner->file->getCurrentLine()
+                            );
+
+                        // Unexpected Char
+                        } else {
+                            throw ExceptionFactory::createUnexpectedChar(
+                                __FILE__,
+                                __LINE__,
+                                $scanner->file->getFileName(),
+                                $scanner->file->getCurrentLine(),
+                                $char
+                            );
+                        }
+                    }
+
+                    break;
+
+                case 1:
+
+                    // Char " not found
+                    if ($pos === false) {
+                        throw ExceptionFactory::createCannotFindChar(
+                                __FILE__,
+                                __LINE__,
+                                $scanner->file->getFileName(),
+                                $scanner->file->getCurrentLine(),
+                                '"'
+                        );
+                    }
+
+                    // Get the value
+                    $value .= $scanner->forward($pos);
+
+                    // Bypass "
+                    $scanner->forward(1);
+
+                    break 2;
+
+                case 2:
+
+                    // Char ' not found
+                    if ($pos === false) {
+                        throw ExceptionFactory::createCannotFindChar(
+                                __FILE__,
+                                __LINE__,
+                                $scanner->file->getFileName(),
+                                $scanner->file->getCurrentLine(),
+                                "'"
+                        );
+                    }
+
+                    // Get the value
+                    $value .= $scanner->forward($pos);
+
+                    // Bypass '
+                    $scanner->forward(1);
+                    
+                    break 2;
+            }
+        }
+
+        // Next lookAhead
+        $scanner->setLookAhead(Token::T_ATTRIBUTE|Token::T_END|Token::T_CLOSE);
+
+        // T_VALUE token found
+        return new SimpleToken(Token::T_VALUE, $value);
+    }
 }
