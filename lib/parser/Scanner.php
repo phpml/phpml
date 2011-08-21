@@ -30,7 +30,7 @@ class Scanner
         if ($this->file->isEOF())
             return false;
         
-        switch (self::$lookAhead) {
+        switch ($this->lookAhead) {
             case Token::T_TEXT|Token::T_OPEN_TAG:
 
                 // TODO: Find foreach registered namespace
@@ -230,6 +230,11 @@ class Scanner
     public function setLookAhead($lookAhead)
     {
         $this->lookAhead = $lookAhead;
+    }
+    
+    public function getFile()
+    {
+        return $this->file;
     }
 
     public function nextChar()

@@ -17,7 +17,8 @@ class AttributeParser implements TokenParser
 {
     public static function parse(Scanner $scanner)
     {
-        $char  = $scanner->file->nextChar();
+        $file  = $scanner->getFile();
+        $char  = $file->nextChar();
         $state = 0;
         $value = '';
 
@@ -29,7 +30,7 @@ class AttributeParser implements TokenParser
                     if ( ($scanner->isLetter($char)) || ($char == '_') ) {
                         $state  = 1;
                         $value .= $char;
-                        $char   = $scanner->file->nextChar();
+                        $char   = $file->nextChar();
 
                     // Exception
                     } else {
@@ -39,8 +40,8 @@ class AttributeParser implements TokenParser
                             throw ExceptionFactory::createUnexpectedEOF(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine()
+                                $file->getFileName(),
+                                $file->getCurrentLine()
                             );
 
                         // Unexpected Char
@@ -48,8 +49,8 @@ class AttributeParser implements TokenParser
                             throw ExceptionFactory::createUnexpectedChar(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine(),
+                                $file->getFileName(),
+                                $file->getCurrentLine(),
                                 $char
                             );
                         }
@@ -63,7 +64,7 @@ class AttributeParser implements TokenParser
                     if ( ($scanner->isAlpha($char)) || ($char == '_') ) {
                         $state  = 1;
                         $value .= $char;
-                        $char   = $scanner->file->nextChar();
+                        $char   = $file->nextChar();
 
                     // Space indicates the end of the T_ATTRIBUTE
                     // But we have to eat the next = char
@@ -83,8 +84,8 @@ class AttributeParser implements TokenParser
                             throw ExceptionFactory::createUnexpectedEOF(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine()
+                                $file->getFileName(),
+                                $file->getCurrentLine()
                             );
 
                         // Unexpected Char
@@ -92,8 +93,8 @@ class AttributeParser implements TokenParser
                             throw ExceptionFactory::createUnexpectedChar(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine(),
+                                $file->getFileName(),
+                                $file->getCurrentLine(),
                                 $char
                             );
                         }
@@ -115,8 +116,8 @@ class AttributeParser implements TokenParser
                             throw ExceptionFactory::createUnexpectedEOF(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine()
+                                $file->getFileName(),
+                                $file->getCurrentLine()
                             );
 
                         // Unexpected Char
@@ -124,8 +125,8 @@ class AttributeParser implements TokenParser
                             throw ExceptionFactory::createUnexpectedChar(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine(),
+                                $file->getFileName(),
+                                $file->getCurrentLine(),
                                 $char
                             );
                         }
@@ -138,7 +139,7 @@ class AttributeParser implements TokenParser
         // Next lookAhead
         $scanner->setLookAhead(Token::T_VALUE);
 
-        // T_ATTRIBUTE found token
+        // T_ATTRIBUTE token found
         return new SimpleToken(Token::T_ATTRIBUTE, $value);
     }
 }

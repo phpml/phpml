@@ -17,7 +17,8 @@ class ValueParser implements TokenParser
 {
     public static function parse(Scanner $scanner)
     {
-        $char  = $scanner->file->nextChar();
+        $file  = $scanner->getFile();
+        $char  = $file->nextChar();
         $state = 0;
         $value = '';
         $pos   = 0;
@@ -29,12 +30,12 @@ class ValueParser implements TokenParser
                     // Ex: "value"
                     if ($char == '"') {
                        $state = 1;
-                       $pos   = $scanner->file->find('"');
+                       $pos   = $file->find('"');
 
                     // Ex: 'value'
                     } elseif ($char == "'") {
                        $state = 2;
-                       $pos   = $scanner->file->find("'");
+                       $pos   = $file->find("'");
 
                     // Exception
                     } else {
@@ -44,8 +45,8 @@ class ValueParser implements TokenParser
                             throw ExceptionFactory::createUnexpectedEOF(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine()
+                                $file->getFileName(),
+                                $file->getCurrentLine()
                             );
 
                         // Unexpected Char
@@ -53,8 +54,8 @@ class ValueParser implements TokenParser
                             throw ExceptionFactory::createUnexpectedChar(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine(),
+                                $file->getFileName(),
+                                $file->getCurrentLine(),
                                 $char
                             );
                         }
@@ -69,8 +70,8 @@ class ValueParser implements TokenParser
                         throw ExceptionFactory::createCannotFindChar(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine(),
+                                $file->getFileName(),
+                                $file->getCurrentLine(),
                                 '"'
                         );
                     }
@@ -90,8 +91,8 @@ class ValueParser implements TokenParser
                         throw ExceptionFactory::createCannotFindChar(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine(),
+                                $file->getFileName(),
+                                $file->getCurrentLine(),
                                 "'"
                         );
                     }

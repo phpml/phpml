@@ -17,7 +17,8 @@ class OpenTagParser implements TokenParser
 {
     public static function parse(Scanner $scanner)
     {
-        $char  = $scanner->file->nextChar();
+        $file  = $scanner->getFile();
+        $char  = $file->nextChar();
         $state = 0;
         $ns    = '';
         $name  = '';
@@ -29,7 +30,7 @@ class OpenTagParser implements TokenParser
                     // Must start with <
                     if ($char == '<') {
                         $state = 1;
-                        $char  = $scanner->file->nextChar();
+                        $char  = $file->nextChar();
 
                     // Exception
                     } else {
@@ -39,8 +40,8 @@ class OpenTagParser implements TokenParser
                             throw ExceptionFactory::createUnexpectedEOF(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine()
+                                $file->getFileName(),
+                                $file->getCurrentLine()
                             );
 
                         // Unexpected Char
@@ -48,8 +49,8 @@ class OpenTagParser implements TokenParser
                             throw ExceptionFactory::createUnexpectedChar(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine(),
+                                $file->getFileName(),
+                                $file->getCurrentLine(),
                                 $char
                             );
                         }
@@ -63,7 +64,7 @@ class OpenTagParser implements TokenParser
                     if ( ($scanner->isLetter($char)) || ($char == '_') ) {
                         $state = 2;
                         $ns   .= $char;
-                        $char  = $scanner->file->nextChar();
+                        $char  = $file->nextChar();
 
                     // Exception
                     } else {
@@ -73,8 +74,8 @@ class OpenTagParser implements TokenParser
                             throw ExceptionFactory::createUnexpectedEOF(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine()
+                                $file->getFileName(),
+                                $file->getCurrentLine()
                             );
 
                         // Unexpected Char
@@ -82,8 +83,8 @@ class OpenTagParser implements TokenParser
                             throw ExceptionFactory::createUnexpectedChar(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine(),
+                                $file->getFileName(),
+                                $file->getCurrentLine(),
                                 $char
                             );
                         }
@@ -97,12 +98,12 @@ class OpenTagParser implements TokenParser
                     if ( ($scanner->isAlpha($char)) || ($char == '_') ) {
                         $state = 2;
                         $ns   .= $char;
-                        $char  = $scanner->file->nextChar();
+                        $char  = $file->nextChar();
 
                     // If the next char is :, we already have the namespace
                     } elseif ($char == ':') {
                         $state = 3;
-                        $char  = $scanner->file->nextChar();
+                        $char  = $file->nextChar();
                     
                     // Exception
                     } else {
@@ -112,8 +113,8 @@ class OpenTagParser implements TokenParser
                             throw ExceptionFactory::createUnexpectedEOF(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine()
+                                $file->getFileName(),
+                                $file->getCurrentLine()
                             );
 
                         // Unexpected Char
@@ -121,8 +122,8 @@ class OpenTagParser implements TokenParser
                             throw ExceptionFactory::createUnexpectedChar(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine(),
+                                $file->getFileName(),
+                                $file->getCurrentLine(),
                                 $char
                             );
                         }
@@ -136,7 +137,7 @@ class OpenTagParser implements TokenParser
                     if ( ($scanner->isLetter($char)) || ($char == '_') ) {
                         $state = 4;
                         $name .= $char;
-                        $char  = $scanner->file->nextChar();
+                        $char  = $file->nextChar();
 
                     // Exception
                     } else {
@@ -146,8 +147,8 @@ class OpenTagParser implements TokenParser
                             throw ExceptionFactory::createUnexpectedEOF(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine()
+                                $file->getFileName(),
+                                $file->getCurrentLine()
                             );
 
                         // Illegal space after :
@@ -155,8 +156,8 @@ class OpenTagParser implements TokenParser
                             throw ExceptionFactory::createIllegalSpace(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine()
+                                $file->getFileName(),
+                                $file->getCurrentLine()
                             );
 
                         // Unexpected Char
@@ -164,8 +165,8 @@ class OpenTagParser implements TokenParser
                             throw ExceptionFactory::createUnexpectedChar(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine(),
+                                $file->getFileName(),
+                                $file->getCurrentLine(),
                                 $char
                             );
                         }
@@ -179,7 +180,7 @@ class OpenTagParser implements TokenParser
                     if ( ($scanner->isAlpha($char)) || ($char == '_') ) {
                         $state = 4;
                         $name .= $char;
-                        $char  = $scanner->file->nextChar();
+                        $char  = $file->nextChar();
 
                     // If the next char is \s, we got the name
                     } elseif ($scanner->isSpace($char)) {
@@ -187,7 +188,7 @@ class OpenTagParser implements TokenParser
 
                     // If the next char is >, we got the T_END
                     } elseif ($char == '>') {
-                        $scanner->file->goBack();
+                        $file->goBack();
                         break 2;
                         
                     // Exception
@@ -198,8 +199,8 @@ class OpenTagParser implements TokenParser
                             throw ExceptionFactory::createUnexpectedEOF(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine()
+                                $file->getFileName(),
+                                $file->getCurrentLine()
                             );
 
                         // Unexpected Char
@@ -207,8 +208,8 @@ class OpenTagParser implements TokenParser
                             throw ExceptionFactory::createUnexpectedChar(
                                 __FILE__,
                                 __LINE__,
-                                $scanner->file->getFileName(),
-                                $scanner->file->getCurrentLine(),
+                                $file->getFileName(),
+                                $file->getCurrentLine(),
                                 $char
                             );
                         }

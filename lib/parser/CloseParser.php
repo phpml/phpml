@@ -16,8 +16,10 @@ class CloseParser implements TokenParser
 {
     public static function parse(Scanner $scanner)
     {
+        $file = $scanner->getFile();
+        
         // Must be /
-        $char = $scanner->file->nextChar();
+        $char = $file->nextChar();
 
         // Unexpected char
         if ($char != '/') {
@@ -27,8 +29,8 @@ class CloseParser implements TokenParser
                 throw ExceptionFactory::createUnexpectedEOF(
                     __FILE__,
                     __LINE__,
-                    $scanner->file->getFileName(),
-                    $scanner->file->getCurrentLine()
+                    $file->getFileName(),
+                    $file->getCurrentLine()
                 );
 
             // Unexpected char
@@ -36,15 +38,15 @@ class CloseParser implements TokenParser
                 throw ExceptionFactory::createUnexpectedChar(
                     __FILE__,
                     __LINE__,
-                    $scanner->file->getFileName(),
-                    $scanner->file->getCurrentLine(),
+                    $file->getFileName(),
+                    $file->getCurrentLine(),
                     $char
                 );
             }
         }
 
         // Must be >
-        $char = $scanner->file->nextChar();
+        $char = $file->nextChar();
 
         // We have a problem here
         if ($char != '>') {
@@ -54,8 +56,8 @@ class CloseParser implements TokenParser
                 throw ExceptionFactory::createIllegalSpace(
                     __FILE__,
                     __LINE__,
-                    $scanner->file->getFileName(),
-                    $scanner->file->getCurrentLine()
+                    $file->getFileName(),
+                    $file->getCurrentLine()
                 );
 
             // Unexpected EOF
@@ -63,8 +65,8 @@ class CloseParser implements TokenParser
                 throw ExceptionFactory::createUnexpectedEOF(
                     __FILE__,
                     __LINE__,
-                    $scanner->file->getFileName(),
-                    $scanner->file->getCurrentLine()
+                    $file->getFileName(),
+                    $file->getCurrentLine()
                 );
 
             // Unexpected char
@@ -72,8 +74,8 @@ class CloseParser implements TokenParser
                 throw ExceptionFactory::createUnexpectedChar(
                     __FILE__,
                     __LINE__,
-                    $scanner->file->getFileName(),
-                    $scanner->file->getCurrentLine(),
+                    $file->getFileName(),
+                    $file->getCurrentLine(),
                     $char
                 );
             }
@@ -82,7 +84,7 @@ class CloseParser implements TokenParser
         // Next lookAhead
         $scanner->setLookAhead(Token::T_OPEN_TAG|Token::T_CLOSE_TAG|Token::T_TEXT);
 
-        // T_CLOSE found token
+        // T_CLOSE token found
         return new Token(Token::T_CLOSE);
     }
 }
