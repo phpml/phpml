@@ -151,6 +151,7 @@ class Scanner
                     }
                     
                     // Nothing to parse, we're done
+                    // EOF
                     return;
                     
                 // Both found
