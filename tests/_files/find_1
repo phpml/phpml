@@ -1,1 +1,1 @@
-<p>a</p><php:Component id="name">fdfsd<php:Component>hahha</php:Component></php:Component>
+<p>a</p><php:Label id="name">fdfsd</php:Label>

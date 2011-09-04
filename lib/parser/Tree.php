@@ -13,15 +13,20 @@ class Tree extends \SplDoublyLinkedList
 {
     protected $top;
     
-    public function push($value, $parent = null)
+    public function push($value, $canHasChild = false, $parent = null)
     {
-        if ($parent)
-            $parent->addChild($value);
-        else            
-            parent::push($value);
+        if ($parent) {
             
+            if (gettype($value) == 'object')
+                $value->setParent($parent);
+                
+            $parent->addChild($value);
+        } else {            
+            parent::push($value);
+        }
+        
         // We don't want T_TEXT
-        if (gettype($value) == 'object')
+        if ($canHasChild)
             $this->top = $value;
     }
     
@@ -29,5 +34,10 @@ class Tree extends \SplDoublyLinkedList
     public function top()
     {
         return $this->top;
+    }
+    
+    public function setTop($component)
+    {
+        $this->top = $component;
     }
 }

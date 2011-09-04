@@ -15,6 +15,7 @@ use \phpml\lib\parser\File,
 class Component
 {
     protected $childs;
+    protected $parent;
     
     public function __construct()
     {
@@ -25,10 +26,25 @@ class Component
     {
         $this->childs[] = $child;
     }
+    
+    public function setParent($parent)
+    {
+        $this->parent = $parent;
+    }
+    
+    public function getParent()
+    {
+        return $this->parent;
+    }
 }
+
+class Label extends Component {}
+class Div extends Component {}
+class Image extends Component {}
+class Load extends Component {}
     
 try {
-    $file = new File('tests/_files/find_1');
+    $file = new File('tests/_files/parse_file');
     $scanner = new Scanner($file);
 
 //    while (($t = $scanner->nextToken()) != false)

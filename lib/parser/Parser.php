@@ -66,10 +66,13 @@ class Parser
                     // T_CLOSE_TAG doesn't need to be pushed into the tree nor built
                     if ($token->getType() == Token::T_CLOSE) {
 
-                        if ($this->stack->isEmpty())
+                        // It's not a child, so put it into the Tree
+                        if (count($this->stack) == 0)
                             $this->tree->push($this->componentBuilder->build());
                         else
-                            $this->tree->push($this->componentBuilder->build(), $this->tree->top());
+                            $this->tree->push($this->componentBuilder->build(), false, $this->tree->top());
+                    } else {
+                        $this->tree->setTop($this->tree->top()->getParent());
                     }
                         
                     break;
@@ -78,9 +81,9 @@ class Parser
                     
                     // Build the component and add into the tree
                     if (count($this->stack) == 1)
-                        $this->tree->push($this->componentBuilder->build());
+                        $this->tree->push($this->componentBuilder->build(), true);
                     else
-                        $this->tree->push($this->componentBuilder->build(), $this->tree->top());
+                        $this->tree->push($this->componentBuilder->build(), true, $this->tree->top());
                     
                     break;
                     
@@ -106,7 +109,7 @@ class Parser
                         
                     // Add the value of T_TEXT into its parent component
                     else
-                        $this->tree->push($token->getValue(), $this->tree->top());
+                        $this->tree->push($token->getValue(), false, $this->tree->top());
                     
                     break;
             }
