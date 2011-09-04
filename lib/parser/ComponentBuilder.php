@@ -46,12 +46,23 @@ class ComponentBuilder
         return new $className();
     }
     
+    protected function cleanUp()
+    {
+        $this->openTag = null;
+        $this->attributes = array();
+        $this->values = array();
+    }
+    
     public function build()
     {
+        // Instantiate the component
         $component = $this->buildOpenTag();
         
         foreach ($this->attributes as $key => $attr)
             $component->{$attr->getValue()} = $this->values[$key]->getValue();
+            
+        // Clean up the old parameters
+        $this->cleanUp();
             
         return $component;
     }

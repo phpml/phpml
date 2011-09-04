@@ -63,11 +63,16 @@ class Parser
                         );
                     
                     // Build the component and add into the tree
-                    $this->tree->push($this->componentBuilder->build());
+                    // T_CLOSE_TAG doesn't need to be pushed into the tree nor built
+                    if ($token->getType() == Token::T_CLOSE)
+                        $this->tree->push($this->componentBuilder->build());
                         
                     break;
 
                 case Token::T_END:
+                    
+                    // Build the component and add into the tree
+                    $this->tree->push($this->componentBuilder->build());
                     
                     break;
                     
