@@ -1,1 +1,1 @@
-<p>a</p><php:StdClass id="name">fdfsd</php:StdClass>
+<p>a</p><php:Component id="name">fdfsd<php:Component>hahha</php:Component></php:Component>

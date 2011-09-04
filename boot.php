@@ -12,12 +12,21 @@ spl_autoload_register('load');
 use \phpml\lib\parser\File,
     \phpml\lib\parser\Scanner;
 
-//var_dump(ftell($file->savedState->filePointer));
-//var_dump(ftell($file->getFilePointer()));
-//var_dump($file->find('<php'));
-//echo $file->getCurrentPos();
-
-
+class Component
+{
+    protected $childs;
+    
+    public function __construct()
+    {
+        $this->childs = array();
+    }
+    
+    public function addChild($child)
+    {
+        $this->childs[] = $child;
+    }
+}
+    
 try {
     $file = new File('tests/_files/find_1');
     $scanner = new Scanner($file);
