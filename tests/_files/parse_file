@@ -10,7 +10,7 @@ asas
 	<php:Image src="#" />
 	<a href="#">LINK</a>
 	<php:Image src="#" />
-	<php:Div onclick="javascript: func()" id="nois">
+	<php:Div onclick="javascript: func()" id="div">
 		<a href="#">LINK</a>
 		<php:Image src="#" />
 		<a href="#">LINK</a>

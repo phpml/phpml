@@ -50,6 +50,7 @@ try {
 //    while (($t = $scanner->nextToken()) != false)
 //        var_dump($t);
 
+    
     $p = new Parser($scanner);
     foreach ($p->parse() as $v)
         var_dump($v);

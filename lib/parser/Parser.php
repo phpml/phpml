@@ -114,7 +114,26 @@ class Parser
                     break;
             }
         }
+        
+        // Check if there is no tokens left into the stack
+        $this->verifyStack();
+        
         return $this->tree;
+    }
+    
+    protected function verifyStack()
+    {
+        // If the stack is not empty, we have a problem
+        if (!$this->stack->isEmpty()) {
+            
+            // Get the first remaining token into the stack and throw an exception
+            throw ExceptionFactory::createTagNotClosed(
+                __FILE__, 
+                __LINE__, 
+                $this->scanner->getFile()->getFileName(), 
+                $this->stack->top()
+            );
+        }
     }
     
     protected function matchTokens(Token $t1, Token $t2)

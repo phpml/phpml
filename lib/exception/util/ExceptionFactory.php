@@ -48,5 +48,15 @@ class ExceptionFactory {
     {
         return new ParserException($_file, $_line, sprintf('Unexpected token (%s) in %s on line %d', $token, $file, $line));
     }
+    
+    public static function createTagNotClosed($_file, $_line, $file, $tag)
+    {
+        return new ParserException($_file, $_line, 
+                sprintf('Tag: (%s:%s) isn\'t closed properly in %s', 
+                    $tag->getNamespace(), 
+                    $tag->getName(), 
+                    $file
+                ));
+    }
 }
 ?>
