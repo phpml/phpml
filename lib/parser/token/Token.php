@@ -60,4 +60,17 @@ class Token
         return $this->type;
     }
     
+    public function __toString()
+    {
+        $object = new \ReflectionClass($this);
+        
+        $type = array_search($this->getType(), $object->getConstants());
+//        echo $type;
+        if ($object->hasProperty('value'))
+            return sprintf('Token: %s Value: %s', $type, $this->getValue());
+        elseif ($object->hasProperty('name'))
+            return sprintf('Token: %s Namespace: %s Name: %s', $type, $this->getNamespace(), $this->getName());
+        else
+            return sprintf('Token: %s', $type);
+    }
 }

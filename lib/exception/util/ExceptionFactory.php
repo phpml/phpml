@@ -43,5 +43,10 @@ class ExceptionFactory {
     {
         return new IOException($_file, $_line, sprintf('File: %s doesn\'t exist', $file));
     }
+    
+    public static function createUnexpectedToken($_file, $_line, $file, $line, $token)
+    {
+        return new ParserException($_file, $_line, sprintf('Unexpected token (%s) in %s on line %d', $token, $file, $line));
+    }
 }
 ?>

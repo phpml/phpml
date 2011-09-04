@@ -2,6 +2,9 @@
 
 namespace phpml\lib\parser;
 
+use phpml\lib\exception\util\ExceptionFactory,
+    phpml\lib\parser\token\Token;
+
 /**
  * Parser class
  *
@@ -9,8 +12,6 @@ namespace phpml\lib\parser;
  * @package lib
  * @subpackage parser
  */
-use phpml\lib\parser\token\Token;
-
 class Parser
 {
     protected $stack;
@@ -39,6 +40,9 @@ class Parser
                     // Push onto the stack for aftermost comparison
                     $this->stack->push($token);
                     
+                    // Start building the component
+                    $this->componentBuilder->setOpenTag($token);
+                    
                     break;
                     
                 case Token::T_CLOSE_TAG:
@@ -47,13 +51,38 @@ class Parser
                     // Match the current token with the previous T_OPEN_TAG
                     if ($this->matchTokens($this->stack->top(), $token))
                         $this->stack->pop();
+                        
+                    // Exception
+                    else
+                        throw ExceptionFactory::createUnexpectedToken(
+                            __FILE__, 
+                            __LINE__, 
+                            $this->scanner->getFile()->getFileName(), 
+                            $this->scanner->getFile()->getCurrentLine(),
+                            $token
+                        );
+                    
+                    // Build the component
+                    return $this->componentBuilder->build();
+                        
+                    break;
+
+                case Token::T_END:
+                    
+                    break;
+                    
+                case Token::T_ATTRIBUTE:
+                    
+                    // Add the T_ATTRIBUTE into the ComponentBuilder
+                    $this->componentBuilder->addAttr($token);
                     
                     break;
                     
                 case Token::T_VALUE:
-                case Token::T_END:
-                case Token::T_ATTRIBUTE:
-                
+                    
+                    // Add the T_VALUE into the ComponentBuilder
+                    $this->componentBuilder->addValue($token);
+                    
                     break;
                     
                 case Token::T_TEXT:
@@ -67,13 +96,14 @@ class Parser
     protected function matchTokens(Token $t1, Token $t2)
     {
         // Comparing T_OPEN_TAG with T_CLOSE_TAG
-        if ($t2->getType() == Token::T_CLOSE_TAG)
+        if ($t2->getType() == Token::T_CLOSE_TAG) {
             if ( ($t1->getNamespace() == $t2->getNamespace()) && ($t1->getName() == $t2->getName()) )
                 return true;
                 
         // Comparing T_OPEN_TAG with T_CLOSE
-        elseif ($t2->getType() == Token::T_CLOSE)
+        } elseif ($t2->getType() == Token::T_CLOSE) {
             return true;
+        }
         
         return false;
     }

@@ -26,7 +26,7 @@ try {
 //        var_dump($t);
 
     $p = new Parser($scanner);
-    var_dump($p->paser()->count());
+    var_dump($p->paser());
 
 } catch (Exception $e) {
     echo $e->getMessage() . ' - ' . $e->getFile() . ':' . $e->getLine();
