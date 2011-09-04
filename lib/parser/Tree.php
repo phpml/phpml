@@ -9,7 +9,7 @@ namespace phpml\lib\parser;
  * @package lib
  * @subpackage parser
  */
-class Tree
+class Tree extends \SplDoublyLinkedList
 {
     
 }

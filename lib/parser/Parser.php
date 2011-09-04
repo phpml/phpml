@@ -63,7 +63,7 @@ class Parser
                         );
                     
                     // Build the component
-                    return $this->componentBuilder->build();
+                    $this->tree->push($this->componentBuilder->build());
                         
                     break;
 
@@ -90,7 +90,7 @@ class Parser
                     break;
             }
         }
-        return $this->stack;
+        return $this->tree;
     }
     
     protected function matchTokens(Token $t1, Token $t2)

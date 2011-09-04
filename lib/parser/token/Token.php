@@ -64,12 +64,18 @@ class Token
     {
         $object = new \ReflectionClass($this);
         
+        // Get the name of the constant type
         $type = array_search($this->getType(), $object->getConstants());
-//        echo $type;
+        
+        // SimpleToken
         if ($object->hasProperty('value'))
             return sprintf('Token: %s Value: %s', $type, $this->getValue());
+            
+        // TagToken
         elseif ($object->hasProperty('name'))
             return sprintf('Token: %s Namespace: %s Name: %s', $type, $this->getNamespace(), $this->getName());
+            
+        // Token
         else
             return sprintf('Token: %s', $type);
     }
