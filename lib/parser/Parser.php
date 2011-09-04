@@ -27,7 +27,7 @@ class Parser
         $this->tree = new Tree();
     }
     
-    public function paser()
+    public function parse()
     {
         $token = null;
         
@@ -62,7 +62,7 @@ class Parser
                             $token
                         );
                     
-                    // Build the component
+                    // Build the component and add into the tree
                     $this->tree->push($this->componentBuilder->build());
                         
                     break;
@@ -86,6 +86,9 @@ class Parser
                     break;
                     
                 case Token::T_TEXT:
+                    
+                    // Add the T_TEXT into the Tree
+                    $this->tree->push($token->getValue());
                     
                     break;
             }
