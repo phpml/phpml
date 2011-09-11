@@ -47,7 +47,7 @@ class Parser
                     
                 case Token::T_CLOSE_TAG:
                 case Token::T_CLOSE:
-                    // TODO insert into the child of the component
+                    
                     // Match the current token with the previous T_OPEN_TAG
                     if ($this->matchTokens($this->stack->top(), $token))
                         $this->stack->pop();
@@ -68,9 +68,11 @@ class Parser
 
                         // It's not a child, so put it into the Tree
                         if (count($this->stack) == 0)
-                            $this->tree->push($this->componentBuilder->build());
+                            $this->tree->addNoChild($this->componentBuilder->build());
                         else
-                            $this->tree->push($this->componentBuilder->build(), false, $this->tree->top());
+                            $this->tree->addNoChild($this->componentBuilder->build(), $this->tree->top());
+
+                    // We removed the token from the stack, so we have to set the new top component
                     } else {
                         $this->tree->setTop($this->tree->top()->getParent());
                     }
@@ -81,9 +83,9 @@ class Parser
                     
                     // Build the component and add into the tree
                     if (count($this->stack) == 1)
-                        $this->tree->push($this->componentBuilder->build(), true);
+                        $this->tree->add($this->componentBuilder->build());
                     else
-                        $this->tree->push($this->componentBuilder->build(), true, $this->tree->top());
+                        $this->tree->add($this->componentBuilder->build(), $this->tree->top());
                     
                     break;
                     
@@ -105,11 +107,11 @@ class Parser
                     
                     // Add the value of T_TEXT into the Tree
                     if ($this->stack->isEmpty())
-                        $this->tree->push($token->getValue());
+                        $this->tree->addText($token);
                         
                     // Add the value of T_TEXT into its parent component
                     else
-                        $this->tree->push($token->getValue(), false, $this->tree->top());
+                        $this->tree->addText($token, $this->tree->top());
                     
                     break;
             }

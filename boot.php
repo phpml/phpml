@@ -49,7 +49,6 @@ try {
 
 //    while (($t = $scanner->nextToken()) != false)
 //        var_dump($t);
-
     
     $p = new Parser($scanner);
     foreach ($p->parse() as $v)
@@ -58,4 +57,3 @@ try {
 } catch (Exception $e) {
     echo $e->getMessage() . ' - ' . $e->getFile() . ':' . $e->getLine();
 }
-

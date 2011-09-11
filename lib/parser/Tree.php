@@ -9,25 +9,40 @@ namespace phpml\lib\parser;
  * @package lib
  * @subpackage parser
  */
+use phpml\lib\parser\token\SimpleToken;
+
 class Tree extends \SplDoublyLinkedList
 {
     protected $top;
     
-    public function push($value, $canHasChild = false, $parent = null)
+    public function add($component, $parent = null)
     {
         if ($parent) {
-            
-            if (gettype($value) == 'object')
-                $value->setParent($parent);
-                
-            $parent->addChild($value);
-        } else {            
-            parent::push($value);
+            $component->setParent($parent);
+            $parent->addChild($component);
+        } else {
+            parent::push($component);
         }
         
-        // We don't want T_TEXT
-        if ($canHasChild)
-            $this->top = $value;
+        $this->top = $component;
+    }
+    // TODO type hinting
+    public function addNoChild($component, $parent = null)
+    {
+        if ($parent) {
+            $component->setParent($parent);
+            $parent->addChild($component);
+        } else {
+            parent::push($component);
+        }
+    }
+    
+    public function addText(SimpleToken $text, $parent = null)
+    {
+        if ($parent)
+            $parent->addChild($text->getValue());
+        else
+            parent::push($text->getValue());
     }
     
     // TODO throw an exception for empty tree
