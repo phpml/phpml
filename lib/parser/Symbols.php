@@ -11,12 +11,17 @@ namespace phpml\lib\parser;
  */
 class Symbols
 {
-    protected static $namespaces;
-    protected static $ids;
+    protected static $namespaces = array();
+    protected static $ids = array();
     
     public static function addId($id)
     {
+        if (self::idExists($id))
+            return false;
+            
         self::$ids[] = $id;
+        
+        return true;
     }
     
     public static function idExists($id)

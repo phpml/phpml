@@ -2,6 +2,8 @@
 
 namespace phpml\lib\parser;
 
+use phpml\lib\exception\util\ExceptionFactory;
+
 use phpml\lib\parser\token\SimpleToken,
     phpml\lib\parser\token\TagToken,
     phpml\lib\parser\token\Token;
@@ -18,11 +20,13 @@ class ComponentBuilder
     protected $openTag;
     protected $attributes;
     protected $values;
+    protected $file;
     
-    public function __construct()
+    public function __construct(File $file)
     {
         $this->attributes = array();
         $this->values = array();
+        $this->file = $file;
     }
     
     public function setOpenTag(TagToken $openTag)
@@ -39,7 +43,8 @@ class ComponentBuilder
     {
         $this->values[] = $value;
     }
-    
+    // TODO load from with namespace from the components directory
+    // TODO verify instanceof
     protected function buildOpenTag()
     {
         $className = $this->openTag->getName();
@@ -58,9 +63,44 @@ class ComponentBuilder
         // Instantiate the component
         $component = $this->buildOpenTag();
         
-        foreach ($this->attributes as $key => $attr)
-            $component->{$attr->getValue()} = $this->values[$key]->getValue();
+        foreach ($this->attributes as $key => $attr) {
             
+            // Id must be a unique T_ATTRIBUTE
+            if ($attr->getValue() == 'id') {
+                
+                // If component's id is not set yet
+                if (is_null($component->getId())) {
+                    $component->setId($this->values[$key]->getValue());
+                    
+                    // Add the id into the Symbols Table
+                    if (!Symbols::addId($component->getId()))
+                        throw ExceptionFactory::createDuplicatedId(
+                            __FILE__,
+                            __LINE__,
+                            $this->file->getFileName(),
+                            $this->file->getCurrentLine(),
+                            $component->getId()
+                        );
+                    
+                } else {
+                    
+                    // Duplicated T_ATTRIBUTE id
+                    throw ExceptionFactory::createDuplicatedTagId(
+                        __FILE__,
+                        __LINE__,
+                        $this->file->getFileName(),
+                        $this->file->getCurrentLine()
+                    );
+                }
+                
+                // It's not an id
+                continue;
+            }
+            
+            // Set other properties
+            $component->{$attr->getValue()} = $this->values[$key]->getValue();
+        }
+        
         // Clean up the old parameters
         $this->cleanUp();
             

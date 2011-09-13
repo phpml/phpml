@@ -23,7 +23,7 @@ class Parser
     {
         $this->scanner = $scanner;
         $this->stack = new \SplStack();
-        $this->componentBuilder = new ComponentBuilder();
+        $this->componentBuilder = new ComponentBuilder($scanner->getFile());
         $this->tree = new Tree();
     }
     

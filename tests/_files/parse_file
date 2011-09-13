@@ -1,6 +1,6 @@
 <php:Load ns="phpml\components\" prefix="php1" />
 <html>
-<php:Label id="name">
+<php:Label id="name" class="name">
 	Thiago
 </php:Label>
 <php:Image src="#" />
@@ -14,7 +14,7 @@ asas
 		<a href="#">LINK</a>
 		<php:Image src="#" />
 		<a href="#">LINK</a>
-		<php:Label id="name">
+		<php:Label id="name1">
 			Thiago
 		</php:Label>
 	</php:Div>

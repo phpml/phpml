@@ -58,5 +58,24 @@ class ExceptionFactory {
                     $file
                 ));
     }
+    
+    public static function createDuplicatedTagId($_file, $_line, $file, $line)
+    {
+        return new ParserException($_file, $_line, 
+                sprintf('Duplicated T_ATTRIBUTE id found in %s on line %d',
+                    $file,
+                    $line
+                ));
+    }
+    
+    public static function createDuplicatedId($_file, $_line, $file, $line, $id)
+    {
+        return new ParserException($_file, $_line, 
+                sprintf('T_ATTRIBUTE id(%s) found in %s on line %d must be UNIQUE',
+                    $id,
+                    $file,
+                    $line
+                ));
+    }
 }
 ?>

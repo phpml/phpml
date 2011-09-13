@@ -12,14 +12,17 @@ spl_autoload_register('load');
 use \phpml\lib\parser\File,
     \phpml\lib\parser\Scanner;
 
-class Component
+abstract class Component
 {
     protected $childs;
     protected $parent;
+    protected $id;
+    protected $properties;
     
     public function __construct()
     {
         $this->childs = array();
+        $this->properties = array();
     }
     
     public function addChild($child)
@@ -36,9 +39,21 @@ class Component
     {
         return $this->parent;
     }
+    
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+    
+    public function getId()
+    {
+        return $this->id;
+    }
 }
 
-class Label extends Component {}
+class Label extends Component {
+
+}
 class Div extends Component {}
 class Image extends Component {}
 class Load extends Component {}
