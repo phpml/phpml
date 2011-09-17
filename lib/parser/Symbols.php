@@ -11,7 +11,7 @@ namespace phpml\lib\parser;
  */
 class Symbols
 {
-    protected static $namespaces = array();
+    protected static $namespaces = array('php' => 'phpml\components');
     protected static $ids = array();
     
     public static function addId($id)
@@ -29,13 +29,13 @@ class Symbols
         return in_array($id, self::$ids);
     }
     
-    public static function addNamespace($ns)
+    public static function addNamespace($name, $ns)
     {
-        self::$namespaces[] = $ns;
+        self::$namespaces[$name] = $ns;
     }
     
-    public static function NamespaceExists($ns)
+    public static function NamespaceExists($name)
     {
-        return in_array($ns, self::$namespaces);
+        return isset(self::$namespaces[$name]);
     }
 }

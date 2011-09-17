@@ -43,7 +43,7 @@ class ComponentBuilder
     {
         $this->values[] = $value;
     }
-    // TODO load from with namespace from the components directory
+    // TODO load with namespace from the components directory
     // TODO verify instanceof
     protected function buildOpenTag()
     {

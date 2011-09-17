@@ -2,6 +2,8 @@
 
 namespace phpml\lib\exception\util;
 
+use phpml\lib\exception\InvalidArgumentException;
+
 use phpml\lib\exception\ParserException,
     phpml\lib\exception\IOException;
 
@@ -76,6 +78,24 @@ class ExceptionFactory {
                     $file,
                     $line
                 ));
+    }
+    
+    public static function createSetUnexpectedProperty($_file, $_line, $component, $property)
+    {
+        return new InvalidArgumentException($_file, $_line, 
+            sprintf('Trying to set an invalid property: %s::%s', 
+                get_class($component),
+                $property
+            ));
+    }
+    
+    public static function createGetUnexpectedProperty($_file, $_line, $component, $property)
+    {
+        return new InvalidArgumentException($_file, $_line, 
+            sprintf('Trying to get an invalid property: %s::%s', 
+                get_class($component),
+                $property
+            ));
     }
 }
 ?>
