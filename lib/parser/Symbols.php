@@ -34,8 +34,8 @@ class Symbols
         self::$namespaces[$name] = $ns;
     }
     
-    public static function NamespaceExists($name)
+    public static function getNamespace($name)
     {
-        return isset(self::$namespaces[$name]);
+        return array_key_exists($name, self::$namespaces) ? self::$namespaces[$name] : false;
     }
 }

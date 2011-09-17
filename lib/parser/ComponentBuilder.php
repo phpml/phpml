@@ -47,7 +47,19 @@ class ComponentBuilder
     // TODO verify instanceof
     protected function buildOpenTag()
     {
-        $className = $this->openTag->getName();
+        $ns = Symbols::getNamespace($this->openTag->getNamespace());
+        
+        // Namespace must be set
+        if ($ns === false)
+            throw ExceptionFactory::createInvalidNamespace(
+                __FILE__,
+                __LINE__,
+                $this->file->getFileName(),
+                $this->file->getCurrentLine(),
+                $this->openTag->getNamespace()
+            );
+        
+        $className = $ns . '\\' . $this->openTag->getName();
         return new $className();
     }
     

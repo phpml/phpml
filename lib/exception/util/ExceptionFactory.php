@@ -97,5 +97,15 @@ class ExceptionFactory {
                 $property
             ));
     }
+    
+    public static function createInvalidNamespace($_file, $_line, $file, $line, $ns)
+    {
+        return new ParserException($_file, $_line, 
+            sprintf('Trying to use invalid namespace(%s) in %s on line %d',
+                $ns,
+                $file,
+                $line
+            ));
+    }
 }
 ?>
