@@ -1,15 +1,18 @@
-<php:Register ns="phpml\components\" prefix="php1" />
+<php:Register ns="phpml\components\cp" prefix="php1" />
 <html>
-<php:Label id="name">
+<php1:Image id="name">
 	Thiago
-</php:Label>
-<php:Image />
+</php1:Image>
+<php:Image src="#" />
 asas
 <php:Div id="body">
 	<a href="#">LINK</a>
+	<php:Image src="#" />
 	<a href="#">LINK</a>
-	<php:Div id="div">
+	<php:Image src="#" />
+	<php:Div onclick="javascript: func()" id="div">
 		<a href="#">LINK</a>
+		<php:Image src="#" />
 		<a href="#">LINK</a>
 		<php:Label id="name1">
 			Thiago

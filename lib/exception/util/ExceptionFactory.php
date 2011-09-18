@@ -107,5 +107,21 @@ class ExceptionFactory {
                 $line
             ));
     }
+    
+    public static function createNoChildsException($_file, $_line, $file, $line, $component, $ns)
+    {
+        return new ParserException($_file, $_line, 
+            sprintf('Component %s:%s in %s on line %d cannot have childs',
+                $ns,
+                $component,
+                $file,
+                $line
+            ));
+    }
+    
+    public static function createDuplicatedPrefix($_file, $_line, $prefix, $ns)
+    {
+        return new ParserException($_file, $_line, sprintf('Prefix %s is already set with value %s', $prefix, $ns));
+    }
 }
 ?>

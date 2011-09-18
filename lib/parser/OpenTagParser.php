@@ -222,6 +222,10 @@ class OpenTagParser implements TokenParser
         // Next lookAhead
         $scanner->setLookAhead(Token::T_ATTRIBUTE|Token::T_END|Token::T_CLOSE);
 
+        // T_REGISTER
+        if ( ($ns == 'php') && ($name == 'Register') )
+            return new TagToken(Token::T_REGISTER, $ns, $name);
+        
         // T_OPEN_TAG token found
         return new TagToken(Token::T_OPEN_TAG, $ns, $name);
     }

@@ -33,8 +33,13 @@ class Scanner
         switch ($this->lookAhead) {
             case Token::T_TEXT|Token::T_OPEN_TAG:
 
-                // TODO: Find foreach registered namespace
-                $pos = $this->file->find('<php:');
+                $registeredNamespaces = Symbols::getRegisteredNamespaces();
+                
+                array_walk($registeredNamespaces, function(&$ns) {
+                    $ns = "<$ns:";
+                });
+
+                $pos = $this->file->find($registeredNamespaces);
                 
                 // Nothing found
                 if ($pos === false) {
@@ -134,12 +139,22 @@ class Scanner
 
             case Token::T_OPEN_TAG|Token::T_CLOSE_TAG|Token::T_TEXT:
 
-                // TODO: Find foreach registered namespace
+                $registeredOpenNamespaces  = Symbols::getRegisteredNamespaces();
+                $registeredCloseNamespaces = $registeredOpenNamespaces;
+                
+                array_walk($registeredOpenNamespaces, function(&$ns) {
+                    $ns = "<$ns:";
+                });
+                
+                array_walk($registeredCloseNamespaces, function(&$ns) {
+                    $ns = "</$ns:";
+                });
+
                 // Try to find T_OPEN_TAG
-                $posOpenTag = $this->file->find('<php:');
+                $posOpenTag = $this->file->find($registeredOpenNamespaces);
 
                 // Try to find T_CLOSE_TAG
-                $posCloseTag = $this->file->find('</php:');
+                $posCloseTag = $this->file->find($registeredCloseNamespaces);
 
                 // Nothing found
                 if ( ($posOpenTag === false) && ($posCloseTag === false) ) {
@@ -205,8 +220,19 @@ class Scanner
 
             case Token::T_OPEN_TAG|Token::T_CLOSE_TAG:
 
-                // TODO: Find foreach registered namespace
-                $pos = $this->file->find(array('</php:', '<php:'));
+                $registeredOpenNamespaces  = Symbols::getRegisteredNamespaces();
+                $registeredCloseNamespaces = $registeredOpenNamespaces;
+                
+                array_walk($registeredOpenNamespaces, function(&$ns) {
+                    $ns = "<$ns:";
+                });
+                
+                array_walk($registeredCloseNamespaces, function(&$ns) use(&$registeredOpenNamespaces) {
+                    $ns = "</$ns:";
+                    $registeredOpenNamespaces[] = $ns;
+                });
+                
+                $pos = $this->file->find($registeredOpenNamespaces);
 
                 // Nothing found
                 if ($pos === false)

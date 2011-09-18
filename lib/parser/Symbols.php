@@ -9,6 +9,8 @@ namespace phpml\lib\parser;
  * @package lib
  * @subpackage parser
  */
+use phpml\lib\exception\util\ExceptionFactory;
+
 class Symbols
 {
     protected static $namespaces = array('php' => 'phpml\components');
@@ -31,7 +33,15 @@ class Symbols
     
     public static function addNamespace($name, $ns)
     {
+        if (array_key_exists($name, self::$namespaces))
+            throw ExceptionFactory::createDuplicatedPrefix(__FILE__, __LINE__, $name, $ns);
+            
         self::$namespaces[$name] = $ns;
+    }
+    
+    public static function getRegisteredNamespaces()
+    {
+        return array_keys(self::$namespaces);
     }
     
     public static function getNamespace($name)

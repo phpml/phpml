@@ -45,6 +45,11 @@ class Token
      * *
      */
     const T_TEXT      = 64;
+    
+    /**
+     * <php:Register
+     */
+    const T_REGISTER  = 128;
 
     protected $type;
 

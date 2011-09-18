@@ -35,6 +35,42 @@ class Parser
             
             switch ($token->getType()) {
                 
+                case Token::T_REGISTER:
+                    
+                    // T_REGISTER has to be parsed differently of the other tokens
+                    $this->componentBuilder->setOpenTag($token);
+                    $register = null;
+                    
+                    while (($register = $this->scanner->nextToken()) !== false) {
+                        
+                        switch ($register->getType()) {
+                            
+                            case Token::T_ATTRIBUTE:
+                                $this->componentBuilder->addAttr($register);
+                                break;
+                                
+                            case Token::T_VALUE:
+                                $this->componentBuilder->addValue($register);
+                                break;
+                                
+                            case Token::T_CLOSE:
+                                $this->componentBuilder->build()->registerNS();
+                                break 3;
+                                
+                            default:
+                                throw ExceptionFactory::createNoChildsException(
+                                    __FILE__,
+                                    __LINE__,
+                                    $this->scanner->getFile()->getFileName(),
+                                    $this->scanner->getFile()->getCurrentLine(), 
+                                    $token->getName(),
+                                    $token->getNamespace()
+                                );
+                        }
+                    }
+                    
+                    break;
+                
                 case Token::T_OPEN_TAG:
                     
                     // Push onto the stack for aftermost comparison
