@@ -27,8 +27,7 @@ try {
     $label->value = 'Thiago';
     $tree[1]->addChild($label);
     
-    foreach ($tree as $t)
-        echo $t;
+    echo $tree;
         
 } catch (Exception $e) {
     echo $e->getMessage() . ' - ' . $e->getFile() . ':' . $e->getLine();

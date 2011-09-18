@@ -55,4 +55,13 @@ class Tree extends \SplDoublyLinkedList
     {
         $this->top = $component;
     }
+    
+    public function __toString()
+    {
+        $html = '';
+        foreach ($this as $comp)
+            $html .= $comp;
+            
+        return $html;
+    }
 }
