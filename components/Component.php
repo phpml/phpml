@@ -70,8 +70,3 @@ abstract class Component
             );
     }
 }
-
-class Label extends Component {}
-class Div extends Component {}
-class Image extends Component {}
-class Load extends Component {}
