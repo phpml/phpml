@@ -31,6 +31,7 @@ class Symbols
         return in_array($id, self::$ids);
     }
     
+    // TODO exception with file information
     public static function addNamespace($name, $ns)
     {
         if (array_key_exists($name, self::$namespaces))
