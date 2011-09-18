@@ -15,7 +15,9 @@ use \phpml\lib\parser\File,
 
 try {
     $c = new Compiler('tests/_files/parse_file');
-    var_dump($c->compile());
+    
+    foreach ($c->compile() as $comp)
+        var_dump($comp);
 } catch (Exception $e) {
     echo $e->getMessage() . ' - ' . $e->getFile() . ':' . $e->getLine();
 }
