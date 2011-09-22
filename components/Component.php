@@ -10,38 +10,43 @@ abstract class Component
     protected $parent;
     protected $id;
     protected $properties;
-    
+
     public function __construct()
     {
         $this->childs = array();
         $this->properties = array();
     }
-    
+
     public function addChild($child)
     {
         $this->childs[] = $child;
     }
-    
+
     public function setParent($parent)
     {
         $this->parent = $parent;
     }
-    
+
     public function getParent()
     {
         return $this->parent;
     }
-    
+
     public function setId($id)
     {
         $this->id = $id;
     }
-    
+
     public function getId()
     {
         return $this->id;
     }
-    
+
+    public function getTag()
+    {
+        return strtolower(end(explode('\\', get_called_class())));
+    }
+
     public function __set($prop, $value)
     {
         // Does this property exist?
@@ -49,13 +54,10 @@ abstract class Component
             $this->properties[$prop] = $value;
         else
             throw ExceptionFactory::createSetUnexpectedProperty(
-                __FILE__,
-                __LINE__,
-                $this,
-                $prop
+                    __FILE__, __LINE__, $this, $prop
             );
     }
-    
+
     public function __get($prop)
     {
         // Does this property exist?
@@ -63,10 +65,20 @@ abstract class Component
             return $this->properties[$prop];
         else
             throw ExceptionFactory::createGetUnexpectedProperty(
-                __FILE__,
-                __LINE__,
-                $this,
-                $prop
+                    __FILE__, __LINE__, $this, $prop
             );
     }
+
+    public function __toString()
+    {
+        $html = '<' . $this->getTag() . '>';
+
+        foreach ($this->childs as $child)
+            $html .= $child;
+
+        $html .= '</' . $this->getTag() . '>';
+
+        return $html;
+    }
+
 }
