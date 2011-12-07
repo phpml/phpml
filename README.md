@@ -10,7 +10,7 @@ on doing what it does better, manage your templates!
 
 Roadmap
 ==============
- - Index IDs, to provide faster elements search
+ - Index IDs, to provide faster elements search - DONE
  - Improve the tests suite
  - Build a template compiler
  - Develop more and more components
