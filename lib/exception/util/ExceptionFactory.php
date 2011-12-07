@@ -2,6 +2,8 @@
 
 namespace phpml\lib\exception\util;
 
+use phpml\lib\exception\RuntimeException;
+
 use phpml\lib\exception\InvalidArgumentException;
 
 use phpml\lib\exception\ParserException,
@@ -127,5 +129,10 @@ class ExceptionFactory {
     public static function createUndefinedId($_file, $_line, $id)
     {
         return new InvalidArgumentException($_file, $_line, sprintf('Undefined id %s', $id));
+    }
+    
+    public static function createChildrenNotAllowed($_file, $_line, $id)
+    {
+        return new RuntimeException($_file, $_line, sprintf('Children not allowed for component with id %s', $id));
     }
 }

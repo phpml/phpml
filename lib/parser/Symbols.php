@@ -10,7 +10,7 @@ namespace phpml\lib\parser;
  * @subpackage parser
  */
 use phpml\lib\exception\util\ExceptionFactory;
-
+// FIXME I have to remove most of this exceptions and behaviours, because they don't belong to this class
 class Symbols
 {
     protected static $namespaces = array('php' => 'phpml\components');

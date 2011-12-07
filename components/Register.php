@@ -12,6 +12,7 @@ class Register extends Component
         
         $this->properties['ns'] = null;
         $this->properties['prefix'] = null;
+        $this->allowChildren = false;
     }
     
     public function registerNS()

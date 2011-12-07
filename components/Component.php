@@ -6,20 +6,29 @@ use phpml\lib\exception\util\ExceptionFactory;
 
 abstract class Component
 {
-    protected $childs;
+    protected $allowChildren = true;
+    protected $children;
     protected $parent;
     protected $id;
     protected $properties;
     
     public function __construct()
     {
-        $this->childs = array();
+        $this->children = array();
         $this->properties = array();
+    }
+    
+    public function isChildrenAllowed()
+    {
+        return $this->allowChildren;
     }
     
     public function addChild($child)
     {
-        $this->childs[] = $child;
+        if (!$this->allowChildren)
+            throw ExceptionFactory::createChildrenNotAllowed(__FILE__, __LINE__, $this->getId());
+        
+        $this->children[] = $child;
     }
     
     public function setParent($parent)

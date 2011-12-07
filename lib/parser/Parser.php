@@ -124,6 +124,14 @@ class Parser
                     else
                         $this->tree->add($this->componentBuilder->build(), $this->tree->top());
                     
+                    // This components does not allow children
+                    if (!$this->tree->top()->isChildrenAllowed())
+                        throw ExceptionFactory::createChildrenNotAllowed(
+                            __FILE__,
+                            __LINE__,
+                            $this->tree->top()->getId()
+                        );
+                        
                     break;
                     
                 case Token::T_ATTRIBUTE:
