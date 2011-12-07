@@ -6,7 +6,9 @@
 <title>Hello world</title>
 </head>
 <body>
-	<php:Div>
+	<php:Register ns="phpml\components\cp" prefix="cp" />
+	<php:Div id ="ha">
+		<cp:Image id="img" />
 	</php:Div>
 </body>
 </html>

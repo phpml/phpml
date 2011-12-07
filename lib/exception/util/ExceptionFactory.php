@@ -123,5 +123,9 @@ class ExceptionFactory {
     {
         return new ParserException($_file, $_line, sprintf('Prefix %s is already set with value %s', $prefix, $ns));
     }
+    
+    public static function createUndefinedId($_file, $_line, $id)
+    {
+        return new InvalidArgumentException($_file, $_line, sprintf('Undefined id %s', $id));
+    }
 }
-?>

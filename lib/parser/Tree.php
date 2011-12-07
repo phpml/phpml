@@ -15,6 +15,11 @@ class Tree extends \SplDoublyLinkedList
 {
     protected $top;
     
+    public function getElementById($id)
+    {
+        return Symbols::getComponentById($id);
+    }
+    
     public function add($component, $parent = null)
     {
         if ($parent) {

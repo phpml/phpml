@@ -16,19 +16,27 @@ class Symbols
     protected static $namespaces = array('php' => 'phpml\components');
     protected static $ids = array();
     
-    public static function addId($id)
+    public static function addId($id, $component)
     {
         if (self::idExists($id))
             return false;
             
-        self::$ids[] = $id;
+        self::$ids[$id] = $component;
         
         return true;
     }
     
+    public static function getComponentById($id)
+    {
+        if (!self::idExists($id))
+            throw ExceptionFactory::createUndefinedId(__FILE__, __LINE__, $id);
+            
+        return self::$ids[$id];
+    }
+    
     public static function idExists($id)
     {
-        return in_array($id, self::$ids);
+        return isset(self::$ids[$id]);
     }
     
     // TODO exception with file information

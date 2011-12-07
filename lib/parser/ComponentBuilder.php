@@ -85,7 +85,7 @@ class ComponentBuilder
                     $component->setId($this->values[$key]->getValue());
                     
                     // Add the id into the Symbols Table
-                    if (!Symbols::addId($component->getId()))
+                    if (!Symbols::addId($component->getId(), $component))
                         throw ExceptionFactory::createDuplicatedId(
                             __FILE__,
                             __LINE__,

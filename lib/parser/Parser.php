@@ -19,6 +19,7 @@ class Parser
     protected $scanner;
     protected $componentBuilder;
     
+    // FIXME This is gonna be a nightmare to test =D
     public function __construct(Scanner $scanner)
     {
         $this->scanner = $scanner;
