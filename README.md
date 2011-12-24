@@ -1,4 +1,4 @@
-PHP Markup Language
+PHP Markup Language [![Build Status](https://secure.travis-ci.org/phpml/phpml.png)](http://travis-ci.org/phpml/phpml)
 ==============
 
 Description
