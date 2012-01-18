@@ -1,3 +1,5 @@
+[![STOP SOPA](http://kinncj.com.br/kinn/stop_sopa.png)](http://kinncj.com.br/kinn)
+
 PHP Markup Language [![Build Status](https://secure.travis-ci.org/phpml/phpml.png)](http://travis-ci.org/phpml/phpml)
 ==============
 
